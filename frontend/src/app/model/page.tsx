@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Cpu, AlertTriangle, ShieldCheck, BarChart2, TrendingUp, Award } from 'lucide-react';
+import { Cpu, AlertTriangle, Play, ShieldAlert, BarChart2, List, Code, Database } from 'lucide-react';
 
 interface ModelMetricDetail {
   rmse: number;
@@ -18,6 +18,22 @@ interface FeatureImportance {
   feature: string;
   importance: number;
 }
+
+const FEATURE_DESCRIPTIONS = [
+  { feature: "historical_risk_score", desc: "Road segment incident frequency (normalised)" },
+  { feature: "event_recurrence_frequency", desc: "Same cause+road pair recurrence (normalised)" },
+  { feature: "time_to_resolution_minutes", desc: "Actual historical closure time" },
+  { feature: "resolution_delay_ratio", desc: "Actual / mean resolution time" },
+  { feature: "planned_event_lead_time_hours", desc: "Hours of advance notice for planned events" },
+  { feature: "multi_incident_overlap_score", desc: "Concurrent incidents in same grid cell & hour" },
+  { feature: "temporal_density_score", desc: "Global density of events in same hour" },
+  { feature: "corridor_vulnerability_tier", desc: "Strategic corridor weight (1=low, 3=high)" },
+  { feature: "cause_priority_interaction", desc: "Cause severity × priority weight product" },
+  { feature: "weekend_flag", desc: "Binary weekend indicator" },
+  { feature: "dow_sin / dow_cos", desc: "Day-of-week cyclical encoding" },
+  { feature: "spillover_multiplier", desc: "Rush-hour × near-market interaction boost" },
+  { feature: "distance_to_hub", desc: "Min distance to metro or market (m)" }
+];
 
 export default function ModelPage() {
   const [loading, setLoading] = useState(true);
@@ -48,6 +64,25 @@ export default function ModelPage() {
     { feature: "hour_cos", importance: 150 }
   ]);
 
+  const [featureCols, setFeatureCols] = useState<string[]>([
+    "hour", "day_of_week", "month", "is_rush_hour", "weekend_flag", "hour_sin", "hour_cos",
+    "dow_sin", "dow_cos", "distance_to_metro", "distance_to_market", "distance_to_intersection",
+    "distance_to_hub", "is_near_intersection", "spillover_multiplier", "historical_risk_score",
+    "event_recurrence_frequency", "time_to_resolution_minutes", "mean_resolution_by_cause",
+    "resolution_delay_ratio", "planned_event_lead_time_hours", "multi_incident_overlap_score",
+    "temporal_density_score", "corridor_vulnerability_tier", "cause_severity_score",
+    "priority_weight", "cause_priority_interaction", "estimated_impact_scale", "road_name_enc",
+    "station_enc"
+  ]);
+
+  const [resolvedColumns, setResolvedColumns] = useState<any>({
+    "latitude": "latitude",
+    "longitude": "longitude",
+    "id": "id",
+    "status": "status",
+    "address": "address"
+  });
+
   useEffect(() => {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
     fetch(`${apiBase}/model-metrics`)
@@ -58,6 +93,8 @@ export default function ModelPage() {
       .then(data => {
         setMetrics(data.metrics);
         setFeatureImportances(data.feature_importances);
+        if (data.feature_cols) setFeatureCols(data.feature_cols);
+        if (data.resolved_columns) setResolvedColumns(data.resolved_columns);
         setError(false);
       })
       .catch(err => {
@@ -71,6 +108,16 @@ export default function ModelPage() {
 
   const maxImportance = Math.max(...featureImportances.map(f => f.importance), 1);
 
+  // Six validation metrics mapping
+  const metricPairs = [
+    { label: "LightGBM RMSE", value: metrics.lgb.rmse, color: "var(--accent-critical)" },
+    { label: "LightGBM R²", value: metrics.lgb.r2, color: "var(--accent-normal)" },
+    { label: "XGBoost RMSE", value: metrics.xgb.rmse, color: "var(--accent-critical)" },
+    { label: "XGBoost R²", value: metrics.xgb.r2, color: "var(--accent-normal)" },
+    { label: "Ensemble RMSE", value: metrics.ensemble.rmse, color: "var(--accent-warning)" },
+    { label: "Ensemble R²", value: metrics.ensemble.r2, color: "var(--accent-warning)" }
+  ];
+
   return (
     <main className="main-content" style={{ marginTop: '20px' }}>
       
@@ -78,7 +125,7 @@ export default function ModelPage() {
       <div className="title-section">
         <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Cpu size={28} className="text-[var(--accent-signal)]" style={{ color: 'var(--accent-signal)' }} />
-          <span>Model Analytics & Metrics</span>
+          <span>Model Architecture & Performance Console</span>
         </h1>
         <p>Validate the performance, statistical errors, and feature weights of the underlying machine learning models.</p>
       </div>
@@ -87,91 +134,43 @@ export default function ModelPage() {
         <div className="dispatch-note" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <AlertTriangle size={18} style={{ flexShrink: 0 }} />
           <div>
-            <strong>Showing Offline Pre-computed Models</strong> — The FastAPI server was not reachable. These metrics correspond to the validation test logs of our LightGBM + XGBoost ensemble training loop.
+            <strong>Showing Offline Pre-computed Models</strong> — Backend FastAPI server was not reachable. These metrics correspond to the validation test logs of our LightGBM + XGBoost ensemble training loop.
           </div>
         </div>
       )}
 
-      {/* Model Performance Comparison Grid */}
-      <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
+      {/* Ensemble Validation Metrics (6 columns / cards) */}
+      <div style={{ marginBottom: '24px' }}>
+        <h3 className="card-title" style={{ marginBottom: '12px' }}>
+          <ShieldAlert size={14} style={{ color: 'var(--accent-signal)' }} />
+          <span>Ensemble Validation Metrics</span>
+        </h3>
         
-        {/* LightGBM card */}
-        <div className="card col-4">
-          <div className="card-title">
-            <TrendingUp size={16} style={{ color: '#60a5fa' }} />
-            <span>LightGBM Regressor</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Validation R² Score</div>
-              <div style={{ fontSize: '28px', fontFamily: 'var(--font-mono)', fontWeight: '600', color: 'var(--text-primary)' }}>
-                {metrics.lgb.r2.toFixed(4)}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px' }}>
+          {metricPairs.map((item, idx) => (
+            <div key={idx} className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: '24px', fontFamily: 'var(--font-mono)', fontWeight: '700', color: item.color }}>
+                {item.value.toFixed(4)}
               </div>
             </div>
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Validation RMSE</div>
-              <div style={{ fontSize: '20px', fontFamily: 'var(--font-mono)', fontWeight: '500', color: 'var(--text-secondary)' }}>
-                {metrics.lgb.rmse.toFixed(4)}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-
-        {/* XGBoost card */}
-        <div className="card col-4">
-          <div className="card-title">
-            <TrendingUp size={16} style={{ color: '#c084fc' }} />
-            <span>XGBoost Regressor</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Validation R² Score</div>
-              <div style={{ fontSize: '28px', fontFamily: 'var(--font-mono)', fontWeight: '600', color: 'var(--text-primary)' }}>
-                {metrics.xgb.r2.toFixed(4)}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Validation RMSE</div>
-              <div style={{ fontSize: '20px', fontFamily: 'var(--font-mono)', fontWeight: '500', color: 'var(--text-secondary)' }}>
-                {metrics.xgb.rmse.toFixed(4)}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Ensemble card */}
-        <div className="card col-4" style={{ borderColor: 'rgba(45, 212, 212, 0.25)', background: 'var(--accent-signal-bg)' }}>
-          <div className="card-title">
-            <Award size={16} style={{ color: 'var(--accent-signal)' }} />
-            <span style={{ color: 'var(--accent-signal)' }}>Ensemble (0.6LGB + 0.4XGB)</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: 'rgba(45, 212, 212, 0.6)', textTransform: 'uppercase' }}>Ensemble R² Score</div>
-              <div style={{ fontSize: '28px', fontFamily: 'var(--font-mono)', fontWeight: '700', color: 'var(--accent-signal)' }}>
-                {metrics.ensemble.r2.toFixed(4)}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: 'rgba(45, 212, 212, 0.6)', textTransform: 'uppercase' }}>Ensemble RMSE</div>
-              <div style={{ fontSize: '20px', fontFamily: 'var(--font-mono)', fontWeight: '600', color: 'var(--text-primary)' }}>
-                {metrics.ensemble.rmse.toFixed(4)}
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-      {/* Feature Importance weights */}
-      <div className="dashboard-grid">
-        <div className="card col-12">
+      {/* Feature Importance & Feature engineering summaries split */}
+      <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
+        
+        {/* Left Column: LightGBM Feature Importances */}
+        <div className="card col-6">
           <div className="card-title">
-            <BarChart2 size={16} style={{ color: 'var(--accent-signal)' }} />
-            <span>Ensemble Feature Importance Weights (Top 15 Predictors)</span>
+            <BarChart2 size={15} style={{ color: 'var(--accent-signal)' }} />
+            <span>LightGBM Feature Importances (Top 20)</span>
           </div>
 
-          <div className="bar-chart-container" style={{ gap: '16px' }}>
+          <div className="bar-chart-container" style={{ gap: '12px' }}>
             {featureImportances.map((item, idx) => {
               const pct = (item.importance / maxImportance) * 100;
               return (
@@ -180,7 +179,9 @@ export default function ModelPage() {
                     <span className="bar-name">
                       {item.feature.replace('_', ' ').replace('_enc', ' target encode')}
                     </span>
-                    <span className="bar-val">{item.importance.toLocaleString()} splits</span>
+                    <span className="bar-val" style={{ color: 'var(--accent-signal)' }}>
+                      {item.importance.toLocaleString()}
+                    </span>
                   </div>
                   <div className="bar-track">
                     <div className="bar-fill" style={{ width: `${pct}%`, backgroundColor: 'var(--accent-signal)' }}></div>
@@ -190,6 +191,71 @@ export default function ModelPage() {
             })}
           </div>
         </div>
+
+        {/* Right Column: Feature Engineering Summary */}
+        <div className="card col-6" style={{ height: 'fit-content' }}>
+          <div className="card-title">
+            <List size={15} style={{ color: 'var(--accent-warning)' }} />
+            <span>Feature Engineering Summary</span>
+          </div>
+
+          <div style={{ overflowX: 'auto', maxHeight: '500px', overflowY: 'auto' }}>
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {FEATURE_DESCRIPTIONS.map((f, idx) => (
+                  <tr key={idx}>
+                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '600', color: 'var(--text-primary)', fontSize: '11px', whiteSpace: 'nowrap' }}>
+                      {f.feature}
+                    </td>
+                    <td style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                      {f.desc}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Schema Audit & Mapped Columns resolver */}
+      <div className="dashboard-grid">
+        
+        {/* Adaptive Column Resolver Output */}
+        <div className="card col-6">
+          <div className="card-title">
+            <Database size={15} style={{ color: 'var(--accent-normal)' }} />
+            <span>Adaptive Column Resolver Output</span>
+          </div>
+          
+          <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '16px', maxHeight: '250px', overflowY: 'auto' }}>
+            <pre style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-normal)', whiteSpace: 'pre-wrap' }}>
+              {JSON.stringify(resolvedColumns, null, 2)}
+            </pre>
+          </div>
+        </div>
+
+        {/* Total Features code display */}
+        <div className="card col-6">
+          <div className="card-title">
+            <Code size={15} style={{ color: 'var(--accent-signal)' }} />
+            <span>Total Features Used in Training ({featureCols.length})</span>
+          </div>
+          
+          <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '16px', maxHeight: '250px', overflowY: 'auto' }}>
+            <pre style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
+              {featureCols.join('\n')}
+            </pre>
+          </div>
+        </div>
+
       </div>
 
     </main>

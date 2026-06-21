@@ -483,11 +483,33 @@ def get_model_metrics():
     for col, imp in zip(feature_cols, importances):
         feat_imp.append({"feature": col, "importance": float(imp)})
     
-    feat_imp = sorted(feat_imp, key=lambda x: x['importance'], reverse=True)[:15]
+    feat_imp = sorted(feat_imp, key=lambda x: x['importance'], reverse=True)[:20]
+
+    # Resolve dynamic column names
+    from backend_engine import dynamic_column_resolver
+    raw_csv = os.path.join(ROOT_DIR, "Astram event data_anonymized.csv.csv")
+    resolved = {}
+    if os.path.exists(raw_csv):
+        try:
+            raw_df = pd.read_csv(raw_csv, nrows=1)
+            resolved = dynamic_column_resolver(raw_df)
+        except Exception:
+            pass
+            
+    if not resolved:
+        resolved = {
+            "latitude": "latitude",
+            "longitude": "longitude",
+            "id": "id",
+            "status": "status",
+            "address": "address"
+        }
 
     return {
         "metrics": model_payload['metrics'],
-        "feature_importances": feat_imp
+        "feature_importances": feat_imp,
+        "feature_cols": feature_cols,
+        "resolved_columns": resolved
     }
 
 if __name__ == '__main__':
