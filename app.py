@@ -148,11 +148,11 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     nav = st.radio("Navigation", [
-        "📊 Command Dashboard",
-        "🗺️ Spatial Intelligence",
-        "🔬 Feature Analytics",
-        "🚨 Dispatch Simulator",
-        "⚙️ Model Console"
+        "📊 Traffic Overview",
+        "🗺️ Congestion Map",
+        "🔬 Traffic Insights",
+        "🚨 Live Resource Dispatcher",
+        "⚙️ AI Model Metrics"
     ], label_visibility="collapsed")
 
     st.markdown("---")
@@ -196,7 +196,7 @@ df, hs = filtered_clustered(
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 1 — COMMAND DASHBOARD
 # ══════════════════════════════════════════════════════════════════════════════
-if nav == "📊 Command Dashboard":
+if nav == "📊 Traffic Overview":
     st.markdown("""
     <div class='brand-wrap'>
       <div class='brand-logo'>🛑</div>
@@ -380,7 +380,7 @@ if nav == "📊 Command Dashboard":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 2 — SPATIAL INTELLIGENCE
 # ══════════════════════════════════════════════════════════════════════════════
-elif nav == "🗺️ Spatial Intelligence":
+elif nav == "🗺️ Congestion Map":
     st.markdown("### Spatial Congestion Intelligence Map")
 
     if df.empty:
@@ -513,7 +513,7 @@ elif nav == "🗺️ Spatial Intelligence":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 3 — FEATURE ANALYTICS
 # ══════════════════════════════════════════════════════════════════════════════
-elif nav == "🔬 Feature Analytics":
+elif nav == "🔬 Traffic Insights":
     st.markdown("### Post-Event Learning & Feature Deep Dive")
 
     if df.empty:
@@ -675,7 +675,7 @@ elif nav == "🔬 Feature Analytics":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 4 — DISPATCH SIMULATOR
 # ══════════════════════════════════════════════════════════════════════════════
-elif nav == "🚨 Dispatch Simulator":
+elif nav == "🚨 Live Resource Dispatcher":
     st.markdown("### Live Incident Dispatch Simulator")
     st.write("Inject any event onto the smart city grid — Nivaaran.ai predicts surge, "
              "applies all modifiers, and outputs a full barricade + manpower directive.")
@@ -905,7 +905,7 @@ elif nav == "🚨 Dispatch Simulator":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 5 — MODEL CONSOLE
 # ══════════════════════════════════════════════════════════════════════════════
-elif nav == "⚙️ Model Console":
+elif nav == "⚙️ AI Model Metrics":
     st.markdown("### Model Architecture & Performance Console")
 
     # Validation metrics
