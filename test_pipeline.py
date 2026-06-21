@@ -42,7 +42,7 @@ def run_pipeline():
 
     print("\n[4] Dispatch Solver Tests...")
     tests = df_c.head(3)
-    preds, _, _ = predict_surge(tests, payload)
+    preds, _, _, _ = predict_surge(tests, payload)
 
     for i, surge in enumerate(preds):
         row  = tests.iloc[i]

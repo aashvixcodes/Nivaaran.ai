@@ -11,6 +11,7 @@ interface ModelMetricDetail {
 interface ModelMetrics {
   lgb: ModelMetricDetail;
   xgb: ModelMetricDetail;
+  pytorch: ModelMetricDetail;
   ensemble: ModelMetricDetail;
 }
 
@@ -41,9 +42,10 @@ export default function ModelPage() {
 
   // Model statistics state (with actual fallback stats from our pipeline training run)
   const [metrics, setMetrics] = useState<ModelMetrics>({
-    lgb: { rmse: 3.0426, r2: 0.9840 },
-    xgb: { rmse: 2.9918, r2: 0.9845 },
-    ensemble: { rmse: 3.0038, r2: 0.9844 }
+    lgb: { rmse: 3.0276, r2: 0.9843 },
+    xgb: { rmse: 2.9958, r2: 0.9846 },
+    pytorch: { rmse: 3.3651, r2: 0.9805 },
+    ensemble: { rmse: 2.9706, r2: 0.9848 }
   });
   
   const [featureImportances, setFeatureImportances] = useState<FeatureImportance[]>([
@@ -108,12 +110,14 @@ export default function ModelPage() {
 
   const maxImportance = Math.max(...featureImportances.map(f => f.importance), 1);
 
-  // Six validation metrics mapping
+  // Eight validation metrics mapping (including PyTorch Deep Learning)
   const metricPairs = [
     { label: "LightGBM RMSE", value: metrics.lgb.rmse, color: "var(--accent-critical)" },
     { label: "LightGBM R²", value: metrics.lgb.r2, color: "var(--accent-normal)" },
     { label: "XGBoost RMSE", value: metrics.xgb.rmse, color: "var(--accent-critical)" },
     { label: "XGBoost R²", value: metrics.xgb.r2, color: "var(--accent-normal)" },
+    { label: "PyTorch DL RMSE", value: metrics.pytorch.rmse, color: "#f472b6" },
+    { label: "PyTorch DL R²", value: metrics.pytorch.r2, color: "#f472b6" },
     { label: "Ensemble RMSE", value: metrics.ensemble.rmse, color: "var(--accent-warning)" },
     { label: "Ensemble R²", value: metrics.ensemble.r2, color: "var(--accent-warning)" }
   ];

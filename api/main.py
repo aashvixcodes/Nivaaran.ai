@@ -118,8 +118,9 @@ def api_haversine(lat1, lon1, lat2, lon2):
     return 2.0 * math.asin(math.sqrt(a)) * 6371000.0
 
 from dispatch_solver import solve_dispatch
-from regression_models import prepare_features
+from regression_models import prepare_features, ResidualMLP
 from hotspot_clustering import fit_hotspots, get_hotspot_summary
+import torch
 
 class PredictRequest(BaseModel):
     road_name: str
@@ -273,7 +274,34 @@ def predict_endpoint(req: PredictRequest):
         
         p_lgb = float(np.clip(lgb_model.predict(X)[0], 5.0, 100.0))
         p_xgb = float(np.clip(xgb_model.predict(X)[0], 5.0, 100.0))
-        surge = 0.6 * p_lgb + 0.4 * p_xgb
+
+        # PyTorch Deep Learning (ResidualMLP) inference
+        p_pytorch = 0.0
+        has_pytorch = ('pytorch_model_state' in model_payload and
+                       model_payload['pytorch_model_state'] is not None and
+                       'pytorch_scaler' in model_payload and
+                       model_payload['pytorch_scaler'] is not None)
+
+        if has_pytorch:
+            try:
+                pytorch_scaler = model_payload['pytorch_scaler']
+                X_scaled = pytorch_scaler.transform(X)
+                X_tensor = torch.tensor(X_scaled, dtype=torch.float32)
+
+                input_dim = X.shape[1]
+                dl_model = ResidualMLP(input_dim, hidden_dim=128, n_blocks=3, dropout=0.15)
+                dl_model.load_state_dict(model_payload['pytorch_model_state'])
+                dl_model.eval()
+                with torch.no_grad():
+                    p_pytorch = float(np.clip(dl_model(X_tensor).numpy().flatten()[0] * 100.0, 5.0, 100.0))
+
+                # 3-Model Ensemble: 50% LightGBM + 30% XGBoost + 20% PyTorch
+                surge = 0.5 * p_lgb + 0.3 * p_xgb + 0.2 * p_pytorch
+            except Exception as e:
+                print(f"[WARN] PyTorch inference failed, falling back to 2-model ensemble: {e}")
+                surge = 0.6 * p_lgb + 0.4 * p_xgb
+        else:
+            surge = 0.6 * p_lgb + 0.4 * p_xgb
 
         dispatch = solve_dispatch(
             surge,
@@ -289,7 +317,8 @@ def predict_endpoint(req: PredictRequest):
             "prediction": {
                 "ensemble": float(round(surge, 2)),
                 "lightgbm": float(round(p_lgb, 2)),
-                "xgboost": float(round(p_xgb, 2))
+                "xgboost": float(round(p_xgb, 2)),
+                "pytorch": float(round(p_pytorch, 2))
             },
             "dispatch": dispatch
         }

@@ -226,7 +226,7 @@ def preprocess_and_feature_engineer(filepath):
     std.loc[mask_closed, 'time_to_resolution_minutes'] = diff_mins
 
     mean_res_by_cause = std.groupby('event_cause')['time_to_resolution_minutes'].mean()
-    std['mean_resolution_by_cause'] = std['event_cause'].map(mean_res_by_cause)
+    std['mean_resolution_by_cause'] = std['event_cause'].map(mean_res_by_cause).fillna(60.0)
 
     std['time_to_resolution_minutes'] = std['time_to_resolution_minutes'].fillna(
         std['mean_resolution_by_cause']

@@ -495,7 +495,7 @@ export default function PredictPage() {
                   <p style={{ fontSize: '11px', textTransform: 'uppercase', color: 'var(--text-tertiary)', fontWeight: '600', marginBottom: '8px' }}>
                     Model Predictors Split
                   </p>
-                  <div className="metrics-row">
+                  <div className="metrics-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
                     <div className="metric-box">
                       <div className="metric-label">LightGBM</div>
                       <div className="metric-val" style={{ color: '#60a5fa' }}>{result.prediction.lightgbm}%</div>
@@ -503,6 +503,10 @@ export default function PredictPage() {
                     <div className="metric-box">
                       <div className="metric-label">XGBoost</div>
                       <div className="metric-val" style={{ color: '#c084fc' }}>{result.prediction.xgboost}%</div>
+                    </div>
+                    <div className="metric-box">
+                      <div className="metric-label">PyTorch DL</div>
+                      <div className="metric-val" style={{ color: '#f472b6' }}>{result.prediction.pytorch ?? '—'}%</div>
                     </div>
                     <div className="metric-box" style={{ borderColor: 'rgba(45, 212, 212, 0.3)', background: 'var(--accent-signal-bg)' }}>
                       <div className="metric-label" style={{ color: 'var(--accent-signal)' }}>Ensemble</div>
