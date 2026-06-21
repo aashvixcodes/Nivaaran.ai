@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Nivaaran.ai — Event-Driven Congestion Predictive Dispatch Engine for Bengaluru" />
+  <title>Nivaaran.ai — Congestion Dispatch Engine</title>
+  <meta http-equiv="refresh" content="3;url=https://huggingface.co/spaces/aashvixcodes/Nivaaran-ai" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #0D1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      color: #CDD9E5;
+      overflow: hidden;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,75,75,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,75,75,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+    }
+
+    .glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,75,75,0.08) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); }
+      50%       { opacity: 1;   transform: translate(-50%,-50%) scale(1.1); }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 60px 48px;
+      max-width: 540px;
+      width: 90%;
+      background: rgba(13,17,23,0.8);
+      border: 1px solid rgba(255,75,75,0.2);
+      border-radius: 24px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 0 80px rgba(255,75,75,0.07), 0 32px 64px rgba(0,0,0,0.5);
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-size: 3.5rem;
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #FF4B4B 0%, #FF9054 40%, #FFD166 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .tagline {
+      font-size: 0.88rem;
+      color: #6E7681;
+      letter-spacing: 0.5px;
+      margin-bottom: 40px;
+    }
+
+    .spinner-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid rgba(255,75,75,0.2);
+      border-top-color: #FF4B4B;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .redirect-text {
+      font-size: 0.95rem;
+      color: #8B949E;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, #FF4B4B, #FF9054);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 24px rgba(255,75,75,0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(255,75,75,0.45);
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 32px;
+      padding: 4px 12px;
+      background: rgba(255,75,75,0.1);
+      border: 1px solid rgba(255,75,75,0.3);
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #FF4B4B;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow"></div>
+
+  <div class="card">
+    <div class="logo">🚦</div>
+    <h1>Nivaaran.ai</h1>
+    <p class="tagline">Event-Driven Congestion Predictive Dispatch Engine · Bengaluru</p>
+
+    <div class="spinner-wrap">
+      <div class="spinner"></div>
+      <span class="redirect-text">Redirecting to the live app…</span>
+    </div>
+
+    <a class="btn" href="https://huggingface.co/spaces/aashvixcodes/Nivaaran-ai">
+      Launch App →
+    </a>
+
+    <div class="badge">Powered by LightGBM + XGBoost</div>
+  </div>
+</body>
+</html>

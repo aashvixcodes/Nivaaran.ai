@@ -1,68 +1,77 @@
+---
+title: Nivaaran.ai
+emoji: 🚦
+colorFrom: red
+colorTo: orange
+sdk: streamlit
+sdk_version: 1.35.0
+app_file: app.py
+pinned: true
+license: mit
+---
+
 # Nivaaran.ai — Event-Driven Congestion Predictive Dispatch Engine
 
-Nivaaran.ai is an enterprise-grade AI-powered smart city solutions platform designed to forecast urban traffic congestion surge and optimize operational resource dispatch. Powered by a combination of unsupervised spatial clustering and supervised tree-based regressors, the system translates real-time traffic incidents (planned and unplanned) into structured, actionable directives.
+Nivaaran.ai is an AI-powered smart city platform designed to forecast urban traffic congestion surge and optimize operational resource dispatch for Bengaluru. It translates real-time traffic incidents (planned and unplanned) into structured, actionable directives using a dual-model machine learning ensemble.
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-### 1. Advanced Feature Engineering & Domain Logic
-The engine extracts and scales features directly tied to operational urban realities, including:
-- **Asset Proximity Buffers:** Distance to metro stations, commercial markets, and major intersections.
-- **Vulnerability Tiers:** Categorized weights based on the strategic priority of road corridors.
-- **Event Recurrence:** Frequency of specific incident types occurring repeatedly on same road segments.
-- **Resolution Intelligence:** Historical resolution times per cause and delay ratio computation.
-- **Lead Time Tracking:** Pre-planning lead time calculation for planned events (e.g., rallies, protests).
-- **Incident Overlap Score:** Spatio-temporal event density analysis.
+**Advanced Feature Engineering**
+- Asset proximity buffers: distance to metro stations, commercial markets, and major intersections
+- Vulnerability tiers: strategic weights for road corridors
+- Event recurrence: incident frequency per road segment and cause type
+- Resolution intelligence: historical resolution times and delay ratios
+- Incident overlap scoring: spatio-temporal event density analysis
 
-### 2. Double-Model Ensemble
-- Dual-model machine learning architecture leveraging optimized **LightGBM** (primary) and **XGBoost** (secondary) regressors.
-- Target-encoded categoricals with Out-of-Fold validation to prevent data leakage.
-- High accuracy: Out-of-fold validation scores exceed **98% R²**.
+**Double-Model Ensemble**
+- LightGBM (primary) + XGBoost (secondary) regressors
+- Out-of-Fold target encoding to prevent data leakage
+- Validation accuracy exceeding 98% R²
 
-### 3. Dynamic Dispatch Optimizer
-- Rule-based manpower estimation and physical barricading blueprints (Tier 1-3).
-- Context-aware modifiers (rush hour, junction proximity, resolution delay, and corridor priority adjustments).
-- Live Variable Message Sign (VMS) broadcast directives.
+**Dynamic Dispatch Optimizer**
+- Rule-based manpower estimation and barricading blueprints (Tier 1–3)
+- Context-aware modifiers for rush hour, junction proximity, and corridor priority
+- Live Variable Message Sign (VMS) broadcast generation
 
-### 4. Interactive Command Center UI
-- Deployed via a premium dark-themed Streamlit dashboard.
-- Features: Live KPIs, interactive spatial scatter map, 3D PyDeck hotspot visualizer, feature analytics deep-dive tabs, and a live sandbox simulator.
-- Fully responsive on mobile and tablets.
-
----
-
-## 🛠️ Tech Stack
-- **Dashboard:** Streamlit, HTML5, Vanilla CSS
-- **Machine Learning:** LightGBM, XGBoost, Scikit-learn
-- **Data Engineering:** Pandas, Numpy
-- **Data Visualizations:** Plotly, PyDeck, Mapbox
-- **Persistence:** Pickle
+**Interactive Dashboard**
+- Dark-themed Streamlit UI with live KPIs
+- Interactive spatial scatter map and 3D PyDeck hotspot visualizer
+- Feature analytics deep-dive and live sandbox simulator
+- Fully responsive on mobile and tablets
 
 ---
 
-## 📦 Getting Started
+## Tech Stack
 
-### 1. Install Dependencies
-Make sure you have Python 3.8+ installed. Run the following to install all requirements:
+| Layer | Technology |
+|---|---|
+| Dashboard | Streamlit, HTML5, Vanilla CSS |
+| Machine Learning | LightGBM, XGBoost, Scikit-learn |
+| Data Engineering | Pandas, NumPy |
+| Visualizations | Plotly, PyDeck |
+
+---
+
+## Getting Started
+
 ```bash
 pip install -r requirements.txt
-```
-
-### 2. Run the Engine & Server
-Run the Streamlit application to start the interactive web UI:
-```bash
 streamlit run app.py
 ```
-By default, the application will be hosted at `http://localhost:8501`.
+
+App runs at `http://localhost:8501` by default.
 
 ---
 
-## 📂 Project Structure
-- `app.py`: Streamlit-based web interface and responsive frontend stylesheets.
-- `backend_engine.py`: Data ingestion pipeline, column resolver, memory downcasting, and feature engineering.
-- `regression_models.py`: Model definition, out-of-fold encoding, LightGBM/XGBoost training, and ensemble prediction.
-- `dispatch_solver.py`: Operational dispatch solver implementing barricade tiers, manpower allocation, and VMS generation.
-- `hotspot_clustering.py`: DBSCAN unsupervised clustering for incident density hotspot extraction.
-- `test_pipeline.py`: End-to-end integration test of the machine learning pipeline.
-- `requirements.txt`: Python dependencies.
+## Project Structure
+
+```
+app.py                  - Streamlit UI and frontend styles
+backend_engine.py       - Data ingestion, feature engineering, column resolver
+regression_models.py    - LightGBM/XGBoost training, OOF encoding, prediction
+dispatch_solver.py      - Barricade tiers, manpower allocation, VMS generation
+hotspot_clustering.py   - DBSCAN clustering for incident hotspot extraction
+requirements.txt        - Python dependencies
+```
