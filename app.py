@@ -736,8 +736,8 @@ elif nav == "🚨 Live Resource Dispatcher":
         corr_tier = CORRIDOR_VULNERABILITY.get(sim_corr, 1)
 
         # Lookup historical features from dataset with safe NaN fallbacks
-        road_rows  = df_all[df_all['road_name'] == sim_road]
-        hist_risk  = float(road_rows['historical_risk_score'].mean()) if not road_rows.empty else 0.05
+        road_rows = df_all[df_all['road_name'] == sim_road]
+        hist_risk = float(road_rows['historical_risk_score'].mean()) if not road_rows.empty else 0.05
         if pd.isna(hist_risk):
             hist_risk = 0.05
 
@@ -751,7 +751,11 @@ elif nav == "🚨 Live Resource Dispatcher":
         if pd.isna(mean_res_c):
             mean_res_c = 60.0
 
-        res_ratio  = 1.0   # unknown at dispatch time
+        actual_res_series = road_rows.query(f"event_cause=='{sim_cause}'")['time_to_resolution_minutes'] if not road_rows.empty else pd.Series()
+        actual_res = float(actual_res_series.mean()) if not actual_res_series.empty else mean_res_c
+        if pd.isna(actual_res):
+            actual_res = mean_res_c
+        res_ratio = round(actual_res / mean_res_c, 3) if mean_res_c > 0 else 1.0
 
         hour_density = float(df_all[df_all['hour'] == hour].shape[0] / max(len(df_all), 1))
 
@@ -764,6 +768,27 @@ elif nav == "🚨 Live Resource Dispatcher":
         csev = CAUSE_SEV.get(sim_cause, 2)
         pwt  = 2 if sim_pri == "High" else 1
         cpi  = csev * pwt
+
+        # Analytical surge formula (same as training synthesis — guarantees
+        # every parameter change produces a visibly different result)
+        base_contrib      = 10.0
+        scale_contrib     = sim_scale ** 1.3
+        risk_contrib      = hist_risk * 35.0
+        rush_contrib      = rush * 18.0
+        interaction       = sim_scale * hist_risk * rush * 1.5
+        closure_contrib   = 8.0 if sim_closure else 0.0
+        corr_contrib      = (corr_tier - 1) * 6.0
+        priority_contrib  = (pwt - 1) * 5.0
+        cause_contrib     = csev * 1.2
+        lead_discount     = min(sim_lead * 0.15, 12.0) if sim_type == "planned" else 0.0
+        delay_contrib     = max(0.0, (res_ratio - 1.0) * 8.0)
+
+        analytical_surge = np.clip(
+            base_contrib + scale_contrib + risk_contrib + rush_contrib
+            + interaction + closure_contrib + corr_contrib
+            + priority_contrib + cause_contrib + delay_contrib - lead_discount,
+            5.0, 100.0
+        )
 
         row_df = pd.DataFrame([{
             'road_name': sim_road, 'police_station': 'Unknown',
@@ -789,11 +814,14 @@ elif nav == "🚨 Live Resource Dispatcher":
             'estimated_impact_scale': sim_scale,
             'event_cause': sim_cause, 'event_type': sim_type,
             'priority': sim_pri, 'status': sim_stat, 'corridor': sim_corr,
-            'congestion_surge_index': 50.0,   # dummy for OOF enc reference
+            'congestion_surge_index': analytical_surge,
         }])
 
         pred_ens, pred_lgb, pred_xgb = predict_surge(row_df, model)
-        surge = float(pred_ens[0])   # robust ensemble prediction
+        ml_surge = float(pred_ens[0])
+
+        # Blend: 60% analytical (always reacts to inputs) + 40% ML
+        surge = float(np.clip(0.6 * analytical_surge + 0.4 * ml_surge, 5.0, 100.0))
 
         disp = solve_dispatch(
             surge, location_name=sim_road, cause=sim_cause,
@@ -814,9 +842,9 @@ elif nav == "🚨 Live Resource Dispatcher":
 
         # Metrics row
         m1, m2, m3 = st.columns(3)
-        m1.metric("LightGBM Surge", f"{surge:.1f}%")
-        m2.metric("XGBoost Surge",  f"{float(pred_xgb[0]):.1f}%")
-        m3.metric("Ensemble Surge", f"{float(pred_ens[0]):.1f}%")
+        m1.metric("Analytical Surge", f"{analytical_surge:.1f}%")
+        m2.metric("ML Model Surge",   f"{ml_surge:.1f}%")
+        m3.metric("Final Surge",      f"{surge:.1f}%")
 
         # Gauge chart
         fig_gauge = go.Figure(go.Indicator(
@@ -843,6 +871,43 @@ elif nav == "🚨 Live Resource Dispatcher":
             font={'color':'#CDD9E5'}
         )
         st.plotly_chart(fig_gauge, use_container_width=True)
+
+        # Parameter contribution breakdown
+        contrib_data = {
+            "Parameter":     ["Base", f"Impact Scale ({sim_scale})", f"Road Risk ({hist_risk:.2f})",
+                               f"Rush Hour ({'Yes' if rush else 'No'})", "Interaction",
+                               f"Road Closure ({'Yes' if sim_closure else 'No'})",
+                               f"Corridor Tier {corr_tier}", f"Priority ({sim_pri})",
+                               f"Cause ({sim_cause})", f"Delay Ratio ({res_ratio:.2f}x)",
+                               f"Lead Time Discount"],
+            "Contribution":  [round(base_contrib, 1), round(scale_contrib, 1),
+                               round(risk_contrib, 1), round(rush_contrib, 1),
+                               round(interaction, 1), round(closure_contrib, 1),
+                               round(corr_contrib, 1), round(priority_contrib, 1),
+                               round(cause_contrib, 1), round(delay_contrib, 1),
+                               round(-lead_discount, 1)]
+        }
+        contrib_df = pd.DataFrame(contrib_data)
+        fig_contrib = go.Figure(go.Bar(
+            x=contrib_df["Contribution"],
+            y=contrib_df["Parameter"],
+            orientation='h',
+            marker=dict(
+                color=contrib_df["Contribution"],
+                colorscale=[[0, '#00CC99'], [0.3, '#FFAB00'], [1, '#FF4B4B']],
+                showscale=False
+            ),
+            text=[f"{v:+.1f}" for v in contrib_df["Contribution"]],
+            textposition='outside'
+        ))
+        fig_contrib.update_layout(
+            template="plotly_dark", height=320,
+            title="What's driving this surge score?",
+            margin=dict(t=36, b=10, l=10, r=50),
+            xaxis_title="Surge Points Added",
+            font={'color': '#CDD9E5', 'size': 11}
+        )
+        st.plotly_chart(fig_contrib, use_container_width=True)
 
         # Dispatch details
         st.markdown("<div class='dispatch-card'>", unsafe_allow_html=True)
