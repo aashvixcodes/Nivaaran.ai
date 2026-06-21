@@ -698,8 +698,8 @@ elif nav == "🚨 Live Resource Dispatcher":
         def_lon   = float(road_data['longitude'].mean()) if not road_data.empty else 77.5946
 
         c_la, c_lo = st.columns(2)
-        sim_lat = c_la.number_input("Latitude",  12.5, 13.5, def_lat, format="%.5f")
-        sim_lon = c_lo.number_input("Longitude", 77.0, 78.0, def_lon, format="%.5f")
+        sim_lat = c_la.number_input("Latitude", 12.5, 13.5, def_lat, format="%.5f", key=f"lat_{sim_road}")
+        sim_lon = c_lo.number_input("Longitude", 77.0, 78.0, def_lon, format="%.5f", key=f"lon_{sim_road}")
 
         sim_scale  = st.slider("Estimated Impact Scale (Footprint)", 1.0, 10.0, 5.0, 0.5)
         sim_closure= st.checkbox("Requires road closure")
@@ -713,193 +713,192 @@ elif nav == "🚨 Live Resource Dispatcher":
         if sim_type == "planned":
             sim_lead = st.number_input("Lead time (hours before event)", 0.0, 720.0, 12.0)
 
-        go_btn = st.button("🚨  Run Nivaaran.ai Prediction", use_container_width=True,
-                           type="primary")
-
     with col_out:
         st.markdown("#### Prediction & Dispatch Output")
 
-        if go_btn:
-            # ── Build feature row ──────────────────────────────────────────
-            days_map = dict(Monday=0,Tuesday=1,Wednesday=2,Thursday=3,
-                            Friday=4,Saturday=5,Sunday=6)
-            hour = sim_time.hour
-            dow  = days_map[sim_day]
-            rush = 1 if (8 <= hour <= 10 or 17 <= hour <= 20) else 0
-            wknd = 1 if dow >= 5 else 0
+        # ── Build feature row ──────────────────────────────────────────
+        days_map = dict(Monday=0,Tuesday=1,Wednesday=2,Thursday=3,
+                        Friday=4,Saturday=5,Sunday=6)
+        hour = sim_time.hour
+        dow  = days_map[sim_day]
+        rush = 1 if (8 <= hour <= 10 or 17 <= hour <= 20) else 0
+        wknd = 1 if dow >= 5 else 0
 
-            dm = min(haversine_distance(sim_lat, sim_lon, v[0], v[1])
-                     for v in METRO_STATIONS.values())
-            dk = min(haversine_distance(sim_lat, sim_lon, v[0], v[1])
-                     for v in COMMERCIAL_MARKETS.values())
-            di = min(haversine_distance(sim_lat, sim_lon, v[0], v[1])
-                     for v in INTERSECTIONS.values())
-            dhub = min(dm, dk)
-            near_isect = 1 if di <= 50.0 else 0
-            spill = 1.5 if rush and dk <= 500 else 1.0
-            corr_tier = CORRIDOR_VULNERABILITY.get(sim_corr, 1)
+        dm = min(haversine_distance(sim_lat, sim_lon, v[0], v[1])
+                 for v in METRO_STATIONS.values())
+        dk = min(haversine_distance(sim_lat, sim_lon, v[0], v[1])
+                 for v in COMMERCIAL_MARKETS.values())
+        di = min(haversine_distance(sim_lat, sim_lon, v[0], v[1])
+                 for v in INTERSECTIONS.values())
+        dhub = min(dm, dk)
+        near_isect = 1 if di <= 50.0 else 0
+        spill = 1.5 if rush and dk <= 500 else 1.0
+        corr_tier = CORRIDOR_VULNERABILITY.get(sim_corr, 1)
 
-            # Lookup historical features from dataset
-            road_rows  = df_all[df_all['road_name'] == sim_road]
-            hist_risk  = float(road_rows['historical_risk_score'].mean()) if not road_rows.empty else 0.05
-            rec_freq   = float(road_rows.query(f"event_cause=='{sim_cause}'")
-                               ['event_recurrence_frequency'].mean()
-                               if not road_rows.empty else 0.05) or 0.05
-            mean_res_c = float(df_all.query(f"event_cause=='{sim_cause}'")
-                               ['mean_resolution_by_cause'].mean()
-                               if len(df_all.query(f"event_cause=='{sim_cause}'")) > 0 else 60.0)
-            res_ratio  = 1.0   # unknown at dispatch time
+        # Lookup historical features from dataset with safe NaN fallbacks
+        road_rows  = df_all[df_all['road_name'] == sim_road]
+        hist_risk  = float(road_rows['historical_risk_score'].mean()) if not road_rows.empty else 0.05
+        if pd.isna(hist_risk):
+            hist_risk = 0.05
 
-            # Hour density
-            hour_density = float(df_all[df_all['hour'] == hour].shape[0] / max(len(df_all), 1))
+        rec_freq_series = road_rows.query(f"event_cause=='{sim_cause}'")['event_recurrence_frequency'] if not road_rows.empty else pd.Series()
+        rec_freq = float(rec_freq_series.mean()) if not rec_freq_series.empty else 0.05
+        if pd.isna(rec_freq):
+            rec_freq = 0.05
 
-            from backend_engine import CORRIDOR_VULNERABILITY as CV
-            CAUSE_SEV = {
-                'vehicle_breakdown':3,'accident':8,'water_logging':6,'pot_holes':2,
-                'construction':4,'congestion':3,'tree_fall':5,'road_conditions':3,
-                'vip_movement':9,'public_event':7,'procession':7,'protest':8,
-                'others':2,'Unknown':1
+        mean_res_series = df_all.query(f"event_cause=='{sim_cause}'")['mean_resolution_by_cause']
+        mean_res_c = float(mean_res_series.mean()) if not mean_res_series.empty else 60.0
+        if pd.isna(mean_res_c):
+            mean_res_c = 60.0
+
+        res_ratio  = 1.0   # unknown at dispatch time
+
+        hour_density = float(df_all[df_all['hour'] == hour].shape[0] / max(len(df_all), 1))
+
+        CAUSE_SEV = {
+            'vehicle_breakdown':3,'accident':8,'water_logging':6,'pot_holes':2,
+            'construction':4,'congestion':3,'tree_fall':5,'road_conditions':3,
+            'vip_movement':9,'public_event':7,'procession':7,'protest':8,
+            'others':2,'Unknown':1
+        }
+        csev = CAUSE_SEV.get(sim_cause, 2)
+        pwt  = 2 if sim_pri == "High" else 1
+        cpi  = csev * pwt
+
+        row_df = pd.DataFrame([{
+            'road_name': sim_road, 'police_station': 'Unknown',
+            'hour': hour, 'day_of_week': dow, 'month': datetime.now().month,
+            'is_rush_hour': rush, 'weekend_flag': wknd,
+            'hour_sin': np.sin(2*np.pi*hour/24), 'hour_cos': np.cos(2*np.pi*hour/24),
+            'dow_sin': np.sin(2*np.pi*dow/7),    'dow_cos': np.cos(2*np.pi*dow/7),
+            'distance_to_metro': dm, 'distance_to_market': dk,
+            'distance_to_intersection': di, 'distance_to_hub': dhub,
+            'is_near_intersection': near_isect, 'spillover_multiplier': spill,
+            'historical_risk_score': hist_risk,
+            'event_recurrence_frequency': rec_freq,
+            'time_to_resolution_minutes': mean_res_c,
+            'mean_resolution_by_cause': mean_res_c,
+            'resolution_delay_ratio': res_ratio,
+            'planned_event_lead_time_hours': sim_lead,
+            'multi_incident_overlap_score': hour_density * 3,
+            'temporal_density_score': hour_density,
+            'corridor_vulnerability_tier': corr_tier,
+            'cause_severity_score': csev,
+            'priority_weight': pwt,
+            'cause_priority_interaction': cpi,
+            'estimated_impact_scale': sim_scale,
+            'event_cause': sim_cause, 'event_type': sim_type,
+            'priority': sim_pri, 'status': sim_stat, 'corridor': sim_corr,
+            'congestion_surge_index': 50.0,   # dummy for OOF enc reference
+        }])
+
+        pred_ens, pred_lgb, pred_xgb = predict_surge(row_df, model)
+        surge = float(pred_ens[0])   # robust ensemble prediction
+
+        disp = solve_dispatch(
+            surge, location_name=sim_road, cause=sim_cause,
+            resolution_delay_ratio=res_ratio,
+            is_near_intersection=near_isect,
+            corridor_tier=corr_tier, is_rush_hour=rush
+        )
+        plan = disp['dispatch_plan']
+        sev  = disp['status']
+
+        badge_cls = {'CRITICAL':'badge-critical','WARNING':'badge-warning','NORMAL':'badge-normal'}[sev]
+        st.markdown(
+            f"<div style='margin-bottom:12px'>"
+            f"Severity: <span class='badge {badge_cls}'>{sev}</span>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+
+        # Metrics row
+        m1, m2, m3 = st.columns(3)
+        m1.metric("LightGBM Surge", f"{surge:.1f}%")
+        m2.metric("XGBoost Surge",  f"{float(pred_xgb[0]):.1f}%")
+        m3.metric("Ensemble Surge", f"{float(pred_ens[0]):.1f}%")
+
+        # Gauge chart
+        fig_gauge = go.Figure(go.Indicator(
+            mode="gauge+number+delta",
+            value=surge,
+            domain={'x':[0,1],'y':[0,1]},
+            title={'text':"Congestion Surge Index", 'font':{'color':'#CDD9E5','size':14}},
+            delta={'reference': 35, 'increasing':{'color':'#FF4B4B'},
+                   'decreasing':{'color':'#00CC99'}},
+            gauge={
+                'axis':{'range':[0,100],'tickcolor':'#484F58'},
+                'bar':{'color': '#FF4B4B' if surge>65 else '#FFAB00' if surge>35 else '#00CC99'},
+                'steps':[
+                    {'range':[0,35],  'color':'rgba(0,204,153,.15)'},
+                    {'range':[35,65], 'color':'rgba(255,171,0,.15)'},
+                    {'range':[65,100],'color':'rgba(255,75,75,.15)'},
+                ],
+                'threshold':{'line':{'color':'white','width':2},'thickness':.8,'value':surge}
             }
-            csev = CAUSE_SEV.get(sim_cause, 2)
-            pwt  = 2 if sim_pri == "High" else 1
-            cpi  = csev * pwt
+        ))
+        fig_gauge.update_layout(
+            template="plotly_dark", height=220,
+            margin=dict(t=20,b=0,l=20,r=20),
+            font={'color':'#CDD9E5'}
+        )
+        st.plotly_chart(fig_gauge, use_container_width=True)
 
-            row_df = pd.DataFrame([{
-                'road_name': sim_road, 'police_station': 'Unknown',
-                'hour': hour, 'day_of_week': dow, 'month': datetime.now().month,
-                'is_rush_hour': rush, 'weekend_flag': wknd,
-                'hour_sin': np.sin(2*np.pi*hour/24), 'hour_cos': np.cos(2*np.pi*hour/24),
-                'dow_sin': np.sin(2*np.pi*dow/7),    'dow_cos': np.cos(2*np.pi*dow/7),
-                'distance_to_metro': dm, 'distance_to_market': dk,
-                'distance_to_intersection': di, 'distance_to_hub': dhub,
-                'is_near_intersection': near_isect, 'spillover_multiplier': spill,
-                'historical_risk_score': hist_risk,
-                'event_recurrence_frequency': rec_freq,
-                'time_to_resolution_minutes': mean_res_c,
-                'mean_resolution_by_cause': mean_res_c,
-                'resolution_delay_ratio': res_ratio,
-                'planned_event_lead_time_hours': sim_lead,
-                'multi_incident_overlap_score': hour_density * 3,
-                'temporal_density_score': hour_density,
-                'corridor_vulnerability_tier': corr_tier,
-                'cause_severity_score': csev,
-                'priority_weight': pwt,
-                'cause_priority_interaction': cpi,
-                'estimated_impact_scale': sim_scale,
-                'event_cause': sim_cause, 'event_type': sim_type,
-                'priority': sim_pri, 'status': sim_stat, 'corridor': sim_corr,
-                'congestion_surge_index': 50.0,   # dummy for OOF enc reference
-            }])
+        # Dispatch details
+        st.markdown("<div class='dispatch-card'>", unsafe_allow_html=True)
 
-            pred_ens, pred_lgb, pred_xgb = predict_surge(row_df, model)
-            surge = float(pred_lgb[0])   # primary LightGBM output
-
-            disp = solve_dispatch(
-                surge, location_name=sim_road, cause=sim_cause,
-                resolution_delay_ratio=res_ratio,
-                is_near_intersection=near_isect,
-                corridor_tier=corr_tier, is_rush_hour=rush
-            )
-            plan = disp['dispatch_plan']
-            sev  = disp['status']
-
-            badge_cls = {'CRITICAL':'badge-critical','WARNING':'badge-warning','NORMAL':'badge-normal'}[sev]
+        st.markdown("<div class='dispatch-section'>Manpower Allocation</div>",
+                    unsafe_allow_html=True)
+        for k, v in [
+            ("Traffic Officers", plan['manpower']['traffic_officers']),
+            ("Supervisors",      plan['manpower']['supervisors']),
+            ("Base Officers",    plan['manpower']['base_officers']),
+            ("Modifier Officers",plan['manpower']['modifier_officers']),
+        ]:
             st.markdown(
-                f"<div style='margin-bottom:12px'>"
-                f"Severity: <span class='badge {badge_cls}'>{sev}</span>"
-                f"</div>",
+                f"<div class='stat-row'><span class='stat-key'>{k}</span>"
+                f"<span class='stat-val'>{v}</span></div>",
                 unsafe_allow_html=True
             )
 
-            # Metrics row
-            m1, m2, m3 = st.columns(3)
-            m1.metric("LightGBM Surge", f"{surge:.1f}%")
-            m2.metric("XGBoost Surge",  f"{float(pred_xgb[0]):.1f}%")
-            m3.metric("Ensemble Surge", f"{float(pred_ens[0]):.1f}%")
+        st.markdown("<br><div class='dispatch-section'>Barricading Blueprint</div>",
+                    unsafe_allow_html=True)
+        st.markdown(
+            f"<div class='stat-row'><span class='stat-key'>Blueprint</span>"
+            f"<span class='stat-val'>{plan['barricading']['blueprint_tier']}</span></div>"
+            f"<div class='stat-row'><span class='stat-key'>Cones Required</span>"
+            f"<span class='stat-val'>{plan['barricading']['cones_required']}</span></div>",
+            unsafe_allow_html=True
+        )
 
-            # Gauge chart
-            fig_gauge = go.Figure(go.Indicator(
-                mode="gauge+number+delta",
-                value=surge,
-                domain={'x':[0,1],'y':[0,1]},
-                title={'text':"Congestion Surge Index", 'font':{'color':'#CDD9E5','size':14}},
-                delta={'reference': 35, 'increasing':{'color':'#FF4B4B'},
-                       'decreasing':{'color':'#00CC99'}},
-                gauge={
-                    'axis':{'range':[0,100],'tickcolor':'#484F58'},
-                    'bar':{'color': '#FF4B4B' if surge>65 else '#FFAB00' if surge>35 else '#00CC99'},
-                    'steps':[
-                        {'range':[0,35],  'color':'rgba(0,204,153,.15)'},
-                        {'range':[35,65], 'color':'rgba(255,171,0,.15)'},
-                        {'range':[65,100],'color':'rgba(255,75,75,.15)'},
-                    ],
-                    'threshold':{'line':{'color':'white','width':2},'thickness':.8,'value':surge}
-                }
-            ))
-            fig_gauge.update_layout(
-                template="plotly_dark", height=220,
-                margin=dict(t=20,b=0,l=20,r=20),
-                font={'color':'#CDD9E5'}
-            )
-            st.plotly_chart(fig_gauge, use_container_width=True)
-
-            # Dispatch details
-            st.markdown("<div class='dispatch-card'>", unsafe_allow_html=True)
-
-            st.markdown("<div class='dispatch-section'>Manpower Allocation</div>",
+        st.markdown("<br><div class='dispatch-section'>Diversion Matrix</div>",
+                    unsafe_allow_html=True)
+        for route in plan['diversion_matrix']:
+            st.markdown(f"<div class='directive-item'>🔀 {route}</div>",
                         unsafe_allow_html=True)
-            for k, v in [
-                ("Traffic Officers", plan['manpower']['traffic_officers']),
-                ("Supervisors",      plan['manpower']['supervisors']),
-                ("Base Officers",    plan['manpower']['base_officers']),
-                ("Modifier Officers",plan['manpower']['modifier_officers']),
-            ]:
-                st.markdown(
-                    f"<div class='stat-row'><span class='stat-key'>{k}</span>"
-                    f"<span class='stat-val'>{v}</span></div>",
-                    unsafe_allow_html=True
-                )
 
-            st.markdown("<br><div class='dispatch-section'>Barricading Blueprint</div>",
+        st.markdown("<br><div class='dispatch-section'>Operational Directives</div>",
+                    unsafe_allow_html=True)
+        for d_item in plan['operational_directives']:
+            st.markdown(f"<div class='directive-item'>✅ {d_item}</div>",
                         unsafe_allow_html=True)
-            st.markdown(
-                f"<div class='stat-row'><span class='stat-key'>Blueprint</span>"
-                f"<span class='stat-val'>{plan['barricading']['blueprint_tier']}</span></div>"
-                f"<div class='stat-row'><span class='stat-key'>Cones Required</span>"
-                f"<span class='stat-val'>{plan['barricading']['cones_required']}</span></div>",
-                unsafe_allow_html=True
-            )
 
-            st.markdown("<br><div class='dispatch-section'>Diversion Matrix</div>",
+        if plan['modifier_notes']:
+            st.markdown("<br><div class='dispatch-section'>Modifier Adjustments</div>",
                         unsafe_allow_html=True)
-            for route in plan['diversion_matrix']:
-                st.markdown(f"<div class='directive-item'>🔀 {route}</div>",
+            for note in plan['modifier_notes']:
+                st.markdown(f"<div class='modifier-note'>{note}</div>",
                             unsafe_allow_html=True)
 
-            st.markdown("<br><div class='dispatch-section'>Operational Directives</div>",
-                        unsafe_allow_html=True)
-            for d_item in plan['operational_directives']:
-                st.markdown(f"<div class='directive-item'>✅ {d_item}</div>",
-                            unsafe_allow_html=True)
+        st.markdown("<br><div class='dispatch-section'>VMS Broadcast</div>",
+                    unsafe_allow_html=True)
+        st.markdown(f"<div class='vms-box'>{plan['vms_broadcast']}</div>",
+                    unsafe_allow_html=True)
 
-            if plan['modifier_notes']:
-                st.markdown("<br><div class='dispatch-section'>Modifier Adjustments</div>",
-                            unsafe_allow_html=True)
-                for note in plan['modifier_notes']:
-                    st.markdown(f"<div class='modifier-note'>{note}</div>",
-                                unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-            st.markdown("<br><div class='dispatch-section'>VMS Broadcast</div>",
-                        unsafe_allow_html=True)
-            st.markdown(f"<div class='vms-box'>{plan['vms_broadcast']}</div>",
-                        unsafe_allow_html=True)
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-            with st.expander("📋 Full JSON Dispatch Payload"):
-                st.json(disp)
-        else:
-            st.info("Configure the incident on the left and click **Run Nivaaran.ai Prediction**.")
+        with st.expander("📋 Full JSON Dispatch Payload"):
+            st.json(disp)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
