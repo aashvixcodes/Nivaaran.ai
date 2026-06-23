@@ -91,13 +91,13 @@ export default function FilterSidebar({ onApply, isLoading = false }: FilterSide
 
       {/* Sidebar */}
       <div 
-        className={`shrink-0 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto flex flex-col bg-white border-r border-[#E5E7EB] transition-all duration-300 ${
+        className={`shrink-0 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto flex flex-col bg-bg-card border-r border-border-subtle transition-all duration-300 ${
           isOpen ? 'w-[260px] opacity-100' : 'w-0 opacity-0 pointer-events-none'
         }`}
       >
         <div className="p-5 flex flex-col gap-5 flex-1">
           {/* Header */}
-          <div className="flex justify-between items-center border-b border-[#E5E7EB] pb-3">
+          <div className="flex justify-between items-center border-b border-border-subtle pb-3">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[#111111]">
               <Sliders size={14} className="text-[#6B7280]" />
               <span>Filters</span>
@@ -193,7 +193,7 @@ export default function FilterSidebar({ onApply, isLoading = false }: FilterSide
                 <button onClick={handleClearAllCauses} className="bg-transparent border-none text-[#EF4444] text-[9px] cursor-pointer font-semibold hover:underline">NONE</button>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto border border-[#E5E7EB] rounded-lg bg-[#F9FAFB] p-2 flex flex-col gap-1.5 max-h-[160px]">
+            <div className="flex-1 overflow-y-auto border border-border-subtle rounded-lg bg-bg-main p-2 flex flex-col gap-1.5 max-h-[160px]">
               {availableCauses.map(cause => (
                 <div key={cause} onClick={() => handleCauseToggle(cause)} className="flex items-center gap-2 cursor-pointer text-[11px] text-[#374151] hover:text-[#111111] transition-colors">
                   {selectedCauses.includes(cause) ? (

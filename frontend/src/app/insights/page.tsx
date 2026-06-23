@@ -98,8 +98,8 @@ export default function InsightsPage() {
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 
                 {/* Risk Roads */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
                     <TrendingUp size={16} className="text-[#111111]" />
                     <h2 className="text-sm font-semibold text-[#111111]">Top 10 High-Risk Road Segments</h2>
                   </div>
@@ -113,7 +113,7 @@ export default function InsightsPage() {
                             <span className="font-medium text-[#374151]">{r.road_name}</span>
                             <span className="font-mono font-semibold text-[#111111]">{r.risk_score.toFixed(3)}</span>
                           </div>
-                          <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-bg-neutral rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-[#111111] rounded-full transition-all duration-300" 
                               style={{ width: `${fillPct}%` }}
@@ -126,8 +126,8 @@ export default function InsightsPage() {
                 </div>
 
                 {/* Road+Cause Recurrence Pairs */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
                     <BarChart size={16} className="text-[#111111]" />
                     <h2 className="text-sm font-semibold text-[#111111]">Top 10 Road &amp; Cause Recurrence Pairs</h2>
                   </div>
@@ -144,7 +144,7 @@ export default function InsightsPage() {
                             </div>
                             <span className="font-mono font-semibold text-[#111111]">{r.recurrence_frequency.toFixed(3)}</span>
                           </div>
-                          <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-bg-neutral rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-[#6B7280] rounded-full transition-all duration-300" 
                               style={{ width: `${fillPct}%` }}
@@ -157,14 +157,14 @@ export default function InsightsPage() {
                 </div>
 
                 {/* Spatial Overlap Scatter Plot */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm xl:col-span-2">
-                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm xl:col-span-2">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
                     <HelpCircle size={16} className="text-[#111111]" />
                     <h2 className="text-sm font-semibold text-[#111111]">Multi-Incident Spatial Overlap vs Congestion Surge Index</h2>
                   </div>
                   
                   <div className="relative w-full">
-                    <svg viewBox="0 0 500 160" className="w-full bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg overflow-visible">
+                    <svg viewBox="0 0 500 160" className="w-full bg-bg-main border border-border-subtle rounded-lg overflow-visible">
                       {/* Gridlines */}
                       <line x1="0" y1="10" x2="500" y2="10" stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray="2,2" />
                       <line x1="0" y1="80" x2="500" y2="80" stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray="2,2" />
@@ -207,8 +207,8 @@ export default function InsightsPage() {
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 
                 {/* Mean Resolution time by Cause */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm overflow-hidden">
-                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm overflow-hidden">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
                     <Clock size={16} className="text-[#111111]" />
                     <h2 className="text-sm font-semibold text-[#111111]">Mean Resolution Time by Cause</h2>
                   </div>
@@ -216,7 +216,7 @@ export default function InsightsPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                       <thead>
-                        <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                        <tr className="bg-bg-neutral border-b border-border-subtle">
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Cause</th>
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Mean</th>
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Median</th>
@@ -224,9 +224,9 @@ export default function InsightsPage() {
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Max</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#F3F4F6]">
+                      <tbody className="divide-y divide-border-subtle">
                         {data.insights.resolution_by_cause?.map((res: any) => (
-                          <tr key={res.cause} className="hover:bg-[#F9FAFB]">
+                          <tr key={res.cause} className="hover:bg-bg-neutral">
                             <td className="px-4 py-3 text-xs font-medium text-[#111111] capitalize">
                               {res.cause.replace('_', ' ')}
                             </td>
@@ -242,8 +242,8 @@ export default function InsightsPage() {
                 </div>
 
                 {/* Corridor Vulnerability vs Surge */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
                     <Award size={16} className="text-[#111111]" />
                     <h2 className="text-sm font-semibold text-[#111111]">Corridor Vulnerability Tier vs Surge Index</h2>
                   </div>
@@ -261,7 +261,7 @@ export default function InsightsPage() {
                               {c.mean_surge.toFixed(1)}% Surge
                             </span>
                           </div>
-                          <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-bg-neutral rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-[#111111] rounded-full" 
                               style={{ width: `${fillPct}%` }}
@@ -284,7 +284,7 @@ export default function InsightsPage() {
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 
                 {/* Metric Summary */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm flex flex-col justify-center">
+                <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm flex flex-col justify-center">
                   <div className="flex items-center gap-2 mb-4">
                     <Calendar size={16} className="text-[#111111]" />
                     <h2 className="text-sm font-semibold text-[#111111]">Lead Time Summary</h2>
@@ -303,8 +303,8 @@ export default function InsightsPage() {
                 </div>
 
                 {/* Planned vs Unplanned Comparison table */}
-                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm xl:col-span-2 overflow-hidden">
-                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm xl:col-span-2 overflow-hidden">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
                     <CheckSquare size={16} className="text-[#111111]" />
                     <h2 className="text-sm font-semibold text-[#111111]">Planned vs Unplanned Event Comparison</h2>
                   </div>
@@ -312,16 +312,16 @@ export default function InsightsPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                       <thead>
-                        <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                        <tr className="bg-bg-neutral border-b border-border-subtle">
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Event Type</th>
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Average Surge</th>
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Mean Resolution</th>
                           <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Total Incident Logs</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#F3F4F6]">
+                      <tbody className="divide-y divide-border-subtle">
                         {data.insights.planned_vs_unplanned?.map((comp: any) => (
-                          <tr key={comp.event_type} className="hover:bg-[#F9FAFB]">
+                          <tr key={comp.event_type} className="hover:bg-bg-neutral">
                             <td className="px-4 py-3 text-xs font-mono font-bold text-[#111111] uppercase">
                               {comp.event_type}
                             </td>
@@ -337,14 +337,14 @@ export default function InsightsPage() {
 
                 {/* Lead Time Distribution Histogram */}
                 {data.insights.planned_lead_times?.length > 0 && (
-                  <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm xl:col-span-3">
-                    <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                  <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm xl:col-span-3">
+                    <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
                       <BarChart size={16} className="text-[#111111]" />
                       <h2 className="text-sm font-semibold text-[#111111]">Planned Event Lead Time Distribution (hours)</h2>
                     </div>
 
                     <div className="relative w-full">
-                      <svg viewBox="0 0 500 120" className="w-full bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg overflow-visible">
+                      <svg viewBox="0 0 500 120" className="w-full bg-bg-main border border-border-subtle rounded-lg overflow-visible">
                         {(() => {
                           const bins = Array(20).fill(0);
                           const leadTimes = data.insights.planned_lead_times;

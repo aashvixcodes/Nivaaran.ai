@@ -168,7 +168,7 @@ export default function CongestionMapPage() {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-8">
           
           {/* Controls Card */}
-          <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm xl:col-span-4 flex flex-col gap-5">
+          <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm xl:col-span-4 flex flex-col gap-5">
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Layers size={15} className="text-[#111111]" />
@@ -206,13 +206,13 @@ export default function CongestionMapPage() {
               </div>
             </div>
 
-            <div className="border-t border-[#F3F4F6] pt-4">
+            <div className="border-t border-border-subtle pt-4">
               <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-3 block">Infrastructure Overlays</label>
               
               <div className="space-y-2">
                 <label 
                   onClick={() => setShowMetro(!showMetro)} 
-                  className="flex items-center gap-3 px-3 py-2 border border-[#E5E7EB] bg-[#F9FAFB] rounded-lg cursor-pointer hover:bg-white transition-all duration-150 text-xs font-medium text-[#374151]"
+                  className="flex items-center gap-3 px-3 py-2 border border-border-subtle bg-bg-neutral rounded-lg cursor-pointer hover:bg-bg-card transition-all duration-150 text-xs font-medium text-[#374151]"
                 >
                   <input type="checkbox" checked={showMetro} readOnly className="rounded border-[#D1D5DB]" />
                   <span className="flex items-center gap-2">
@@ -223,7 +223,7 @@ export default function CongestionMapPage() {
 
                 <label 
                   onClick={() => setShowMarket(!showMarket)} 
-                  className="flex items-center gap-3 px-3 py-2 border border-[#E5E7EB] bg-[#F9FAFB] rounded-lg cursor-pointer hover:bg-white transition-all duration-150 text-xs font-medium text-[#374151]"
+                  className="flex items-center gap-3 px-3 py-2 border border-border-subtle bg-bg-neutral rounded-lg cursor-pointer hover:bg-bg-card transition-all duration-150 text-xs font-medium text-[#374151]"
                 >
                   <input type="checkbox" checked={showMarket} readOnly className="rounded border-[#D1D5DB]" />
                   <span className="flex items-center gap-2">
@@ -234,7 +234,7 @@ export default function CongestionMapPage() {
 
                 <label 
                   onClick={() => setShowIsect(!showIsect)} 
-                  className="flex items-center gap-3 px-3 py-2 border border-[#E5E7EB] bg-[#F9FAFB] rounded-lg cursor-pointer hover:bg-white transition-all duration-150 text-xs font-medium text-[#374151]"
+                  className="flex items-center gap-3 px-3 py-2 border border-border-subtle bg-bg-neutral rounded-lg cursor-pointer hover:bg-bg-card transition-all duration-150 text-xs font-medium text-[#374151]"
                 >
                   <input type="checkbox" checked={showIsect} readOnly className="rounded border-[#D1D5DB]" />
                   <span className="flex items-center gap-2">
@@ -246,7 +246,7 @@ export default function CongestionMapPage() {
             </div>
 
             {/* Threshold Legend */}
-            <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4 mt-2">
+            <div className="bg-bg-neutral border border-border-subtle rounded-lg p-4 mt-2">
               <span className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider block mb-3">Color Scale Legend</span>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs text-[#4B5563]">
@@ -266,10 +266,10 @@ export default function CongestionMapPage() {
           </div>
 
           {/* Interactive Plot Map */}
-          <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm xl:col-span-8 flex flex-col min-h-[440px]">
+          <div className="bg-bg-card border border-border-subtle rounded-xl overflow-hidden shadow-sm xl:col-span-8 flex flex-col min-h-[440px]">
             
             {/* Map Header */}
-            <div className="flex justify-between items-center px-6 py-4 border-b border-[#E5E7EB] bg-[#F9FAFB]">
+            <div className="flex justify-between items-center px-6 py-4 border-b border-border-subtle bg-bg-neutral">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7280]">
                 Active Incident Nodes Map (Total: {data.incidents.length})
               </span>
@@ -279,7 +279,7 @@ export default function CongestionMapPage() {
             </div>
 
             {/* SVG Visualizer Map */}
-            <div className="relative flex-1 bg-[#FAFAFA] min-h-[380px] border-b border-[#E5E7EB]">
+            <div className="relative flex-1 bg-bg-main min-h-[380px] border-b border-border-subtle">
               <svg
                 ref={svgRef}
                 viewBox="0 0 500 400"
@@ -367,10 +367,11 @@ export default function CongestionMapPage() {
               {/* Hover Box Info Overlay */}
               {hoverDetail && (
                 <div
-                  className="absolute top-4 left-4 bg-white border border-[#E5E7EB] rounded-lg p-4 text-xs text-[#111111] shadow-lg max-w-[260px] flex flex-col gap-2 z-10"
+                  className="absolute top-4 left-4 bg-bg-card border border-border-subtle rounded-lg p-4 text-xs text-[#111111] shadow-lg max-w-[260px] flex flex-col gap-2 z-10"
+                  onMouseEnter={() => setHoverDetail(hoverDetail)}
                   onMouseLeave={() => setHoverDetail(null)}
                 >
-                  <div className="flex justify-between items-center border-b border-[#F3F4F6] pb-2 font-bold">
+                  <div className="flex justify-between items-center border-b border-border-subtle pb-2 font-bold">
                     <span className="truncate max-w-[170px] text-[#111111]">{hoverDetail.road_name}</span>
                     <span className="text-[#6B7280] font-mono">#{hoverDetail.id}</span>
                   </div>
@@ -398,8 +399,8 @@ export default function CongestionMapPage() {
         </div>
 
         {/* DBSCAN Hotspots list */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border-subtle">
             <Radio size={16} className="text-[#EF4444]" />
             <h2 className="text-sm font-semibold text-[#111111]">3D Hotspot Intensity Volume (Centroids)</h2>
           </div>
@@ -412,7 +413,7 @@ export default function CongestionMapPage() {
                 <strong> Cumulative Surge Index</strong> is calculated by summing active congestion indexes inside each bottleneck.
               </p>
               
-              <div className="p-4 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg text-[11px] text-[#6B7280] leading-relaxed">
+              <div className="p-4 bg-bg-main border border-border-subtle rounded-lg text-[11px] text-[#6B7280] leading-relaxed">
                 Centroid coordinates represent the midpoints of bottlenecks. Strategic deployments should prioritize high-density clusters.
               </div>
             </div>
@@ -420,10 +421,10 @@ export default function CongestionMapPage() {
             {/* Hotspots Centroid list */}
             <div className="lg:col-span-2">
               {data.hotspots.length > 0 ? (
-                <div className="max-h-[220px] overflow-y-auto border border-[#E5E7EB] rounded-lg overflow-hidden shadow-sm">
+                <div className="max-h-[220px] overflow-y-auto border border-border-subtle rounded-lg overflow-hidden shadow-sm">
                   <table className="w-full border-collapse">
                     <thead>
-                      <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                      <tr className="bg-bg-neutral border-b border-border-subtle">
                         <th className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Hotspot ID</th>
                         <th className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Incidents Count</th>
                         <th className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Mean Surge Index</th>
@@ -431,9 +432,9 @@ export default function CongestionMapPage() {
                         <th className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Centroid Coordinates</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F3F4F6]">
+                    <tbody className="divide-y divide-border-subtle">
                       {data.hotspots.map((h: any) => (
-                        <tr key={h.hotspot_id} className="hover:bg-[#F9FAFB]">
+                        <tr key={h.hotspot_id} className="hover:bg-bg-neutral">
                           <td className="px-4 py-3 text-xs font-mono font-bold text-[#EF4444]">
                             #{h.hotspot_id}
                           </td>
@@ -449,7 +450,7 @@ export default function CongestionMapPage() {
                   </table>
                 </div>
               ) : (
-                <div className="py-12 text-center text-xs text-[#9CA3AF] border border-dashed border-[#E5E7EB] rounded-lg">
+                <div className="py-12 text-center text-xs text-[#9CA3AF] border border-dashed border-border-subtle rounded-lg">
                   No active hotspots found under current filters or cluster settings. Loosen filters or decrease DBSCAN Min Cluster Size.
                 </div>
               )}

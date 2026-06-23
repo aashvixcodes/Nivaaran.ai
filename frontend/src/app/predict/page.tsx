@@ -107,20 +107,20 @@ const PRESET_SCENARIOS: Preset[] = [
 
 const badgeClass = (badge: string) => {
   switch (badge) {
-    case 'Critical': return 'bg-red-50 text-red-600';
-    case 'High': return 'bg-amber-50 text-amber-600';
-    case 'Medium': return 'bg-amber-50 text-amber-600';
-    case 'Low': return 'bg-emerald-50 text-emerald-600';
-    default: return 'bg-gray-50 text-gray-600';
+    case 'Critical': return 'bg-pastel-red text-pastel-red-text border border-pastel-red-text/10';
+    case 'High': return 'bg-pastel-amber text-pastel-amber-text border border-pastel-amber-text/10';
+    case 'Medium': return 'bg-pastel-amber text-pastel-amber-text border border-pastel-amber-text/10';
+    case 'Low': return 'bg-pastel-green text-pastel-green-text border border-pastel-green-text/10';
+    default: return 'bg-bg-neutral text-[#6B7280] border border-border-subtle';
   }
 };
 
 const statusBadgeClass = (status: string) => {
   switch (status) {
-    case 'CRITICAL': return 'bg-red-50 text-red-700 border border-red-200';
-    case 'WARNING': return 'bg-amber-50 text-amber-700 border border-amber-200';
-    case 'NORMAL': return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-    default: return 'bg-gray-50 text-gray-700 border border-gray-200';
+    case 'CRITICAL': return 'bg-pastel-red text-pastel-red-text border border-pastel-red-text/20';
+    case 'WARNING': return 'bg-pastel-amber text-pastel-amber-text border border-pastel-amber-text/20';
+    case 'NORMAL': return 'bg-pastel-green text-pastel-green-text border border-pastel-green-text/20';
+    default: return 'bg-bg-neutral text-[#374151] border border-border-subtle';
   }
 };
 
@@ -266,7 +266,7 @@ export default function PredictPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAFAFA] px-6 py-8 lg:px-10">
+    <main className="min-h-screen bg-bg-main px-6 py-8 lg:px-10">
 
       {/* Title */}
       <div className="mb-8">
@@ -283,7 +283,7 @@ export default function PredictPage() {
         {PRESET_SCENARIOS.map((p, idx) => (
           <button
             key={idx}
-            className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-left hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+            className="bg-bg-card border border-border-subtle rounded-xl p-4 text-left hover:shadow-md hover:scale-[1.02] transition-all duration-200 cursor-pointer"
             onClick={() => applyPreset(p)}
           >
             <div className="flex items-center justify-between mb-2.5">
@@ -302,7 +302,7 @@ export default function PredictPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6">
 
         {/* Left Side: Form */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <ScanEye size={16} className="text-[#6B7280]" />
             <span className="text-sm font-semibold text-[#111111]">Incident Configuration</span>
@@ -530,18 +530,18 @@ export default function PredictPage() {
 
           {/* Error Alert */}
           {errorMsg && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex flex-col gap-1.5">
-              <div className="flex items-center gap-2 text-red-700 font-semibold text-sm">
+            <div className="bg-pastel-red border border-pastel-red-text/10 rounded-lg p-4 flex flex-col gap-1.5">
+              <div className="flex items-center gap-2 text-pastel-red-text font-semibold text-sm">
                 <AlertTriangle size={16} />
                 <span>Backend API Connection Error</span>
               </div>
-              <p className="text-xs text-red-600 leading-relaxed">{errorMsg}</p>
+              <p className="text-xs text-pastel-red-text/80 leading-relaxed">{errorMsg}</p>
             </div>
           )}
 
           {/* Results view */}
           {result ? (
-            <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 animate-slide-up">
+            <div className="bg-bg-card border border-border-subtle rounded-xl p-6 animate-slide-up">
               {/* Header */}
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
@@ -554,7 +554,7 @@ export default function PredictPage() {
               </div>
 
               {/* Gauge and Model Breakdown */}
-              <div className="flex items-center gap-6 flex-wrap border-b border-[#E5E7EB] pb-5 mb-5">
+              <div className="flex items-center gap-6 flex-wrap border-b border-border-subtle pb-5 mb-5">
                 <div className="flex-1 min-w-[150px]">
                   <Gauge value={result.prediction.ensemble} />
                 </div>
@@ -564,19 +564,19 @@ export default function PredictPage() {
                     Model Predictors Split
                   </p>
                   <div className="grid grid-cols-4 gap-3">
-                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-3 text-center">
+                    <div className="bg-bg-neutral border border-border-subtle rounded-lg p-3 text-center">
                       <div className="text-[10px] text-[#9CA3AF] font-medium mb-1">LightGBM</div>
-                      <div className="text-lg font-bold font-mono text-blue-500">{result.prediction.lightgbm}%</div>
+                      <div className="text-lg font-bold font-mono text-blue-600">{result.prediction.lightgbm}%</div>
                     </div>
-                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-3 text-center">
+                    <div className="bg-bg-neutral border border-border-subtle rounded-lg p-3 text-center">
                       <div className="text-[10px] text-[#9CA3AF] font-medium mb-1">XGBoost</div>
-                      <div className="text-lg font-bold font-mono text-purple-400">{result.prediction.xgboost}%</div>
+                      <div className="text-lg font-bold font-mono text-purple-600">{result.prediction.xgboost}%</div>
                     </div>
-                    <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-3 text-center">
+                    <div className="bg-bg-neutral border border-border-subtle rounded-lg p-3 text-center">
                       <div className="text-[10px] text-[#9CA3AF] font-medium mb-1">PyTorch DL</div>
-                      <div className="text-lg font-bold font-mono text-pink-400">{result.prediction.pytorch ?? '—'}%</div>
+                      <div className="text-lg font-bold font-mono text-pink-600">{result.prediction.pytorch ?? '—'}%</div>
                     </div>
-                    <div className="bg-[#111111]/[0.03] border border-[#111111]/10 rounded-lg p-3 text-center">
+                    <div className="bg-bg-neutral/70 border border-border-subtle rounded-lg p-3 text-center">
                       <div className="text-[10px] text-[#111111] font-semibold mb-1">Ensemble</div>
                       <div className="text-lg font-bold font-mono text-[#111111]">{result.prediction.ensemble}%</div>
                     </div>
@@ -593,7 +593,7 @@ export default function PredictPage() {
 
                 {/* Dispatch Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                  <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4">
+                  <div className="bg-bg-neutral border border-border-subtle rounded-lg p-4">
                     <div className="text-[10px] uppercase text-[#9CA3AF] font-semibold tracking-wider mb-1.5">Deployment Manpower</div>
                     <div className="text-lg font-bold text-[#111111]">
                       {result.dispatch.dispatch_plan.manpower.traffic_officers} Officers
@@ -604,7 +604,7 @@ export default function PredictPage() {
                       </div>
                     )}
                   </div>
-                  <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4">
+                  <div className="bg-bg-neutral border border-border-subtle rounded-lg p-4">
                     <div className="text-[10px] uppercase text-[#9CA3AF] font-semibold tracking-wider mb-1.5">Barricade Blueprint</div>
                     <div className="text-sm font-semibold text-[#111111] leading-snug">
                       {result.dispatch.dispatch_plan.barricading.blueprint_tier}
@@ -618,17 +618,17 @@ export default function PredictPage() {
                 </div>
 
                 {/* VMS Broadcasting */}
-                <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4 mb-5">
+                <div className="bg-bg-neutral border border-border-subtle rounded-lg p-4 mb-5">
                   <div className="text-[9px] font-bold text-[#9CA3AF] uppercase tracking-wider mb-2">
                     Digital VMS Billboard Advisory
                   </div>
-                  <div className="font-mono text-sm text-amber-600 tracking-wide">
+                  <div className="font-mono text-sm text-[#7C5A1D] tracking-wide">
                     &quot;{result.dispatch.dispatch_plan.vms_broadcast}&quot;
                   </div>
                 </div>
 
                 {/* Operational Directives */}
-                <div className="border-t border-[#E5E7EB] pt-4 mb-5">
+                <div className="border-t border-border-subtle pt-4 mb-5">
                   <div className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider mb-3">
                     Operational Directives
                   </div>
@@ -645,12 +645,12 @@ export default function PredictPage() {
                 {/* System Alerts & Modifiers */}
                 {result.dispatch.dispatch_plan.modifier_notes.length > 0 && (
                   <div className="mb-5">
-                    <div className="text-[10px] font-bold text-red-500 uppercase tracking-wider mb-3">
+                    <div className="text-[10px] font-bold text-pastel-red-text uppercase tracking-wider mb-3">
                       System Alerts &amp; Modifiers
                     </div>
                     <div className="flex flex-col gap-2">
                       {result.dispatch.dispatch_plan.modifier_notes.map((note: string, idx: number) => (
-                        <div key={idx} className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2 text-sm text-red-700">
+                        <div key={idx} className="bg-pastel-red border border-pastel-red-text/10 rounded-lg p-3 flex items-start gap-2 text-sm text-pastel-red-text">
                           <AlertTriangle size={13} className="flex-shrink-0 mt-0.5" />
                           <span>{note}</span>
                         </div>
@@ -661,13 +661,13 @@ export default function PredictPage() {
 
                 {/* Diversion Routes */}
                 {result.dispatch.dispatch_plan.diversion_matrix.length > 0 && (
-                  <div className="border-t border-[#E5E7EB] pt-4">
+                  <div className="border-t border-border-subtle pt-4">
                     <div className="text-[10px] font-bold text-[#9CA3AF] uppercase tracking-wider mb-3">
                       Standard Detour Routing Matrix
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       {result.dispatch.dispatch_plan.diversion_matrix.map((r: string, idx: number) => (
-                        <span key={idx} className="text-xs bg-[#F9FAFB] border border-[#E5E7EB] rounded-md px-3 py-1.5 text-[#6B7280]">
+                        <span key={idx} className="text-xs bg-bg-neutral border border-border-subtle rounded-md px-3 py-1.5 text-[#6B7280]">
                           {r}
                         </span>
                       ))}
@@ -678,7 +678,7 @@ export default function PredictPage() {
             </div>
           ) : (
             /* Empty State */
-            <div className="border-2 border-dashed border-[#E5E7EB] rounded-xl p-12 text-center flex flex-col items-center gap-3">
+            <div className="border-2 border-dashed border-border-subtle rounded-xl p-12 text-center flex flex-col items-center gap-3">
               <ScanEye size={32} className="text-[#9CA3AF]" />
               <div>
                 <p className="text-sm font-semibold text-[#111111]">No Prediction Output Calculated</p>

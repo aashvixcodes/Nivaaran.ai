@@ -65,7 +65,7 @@ export default function HistoryPage() {
         {history.length > 0 && (
           <button 
             onClick={handleClearHistory} 
-            className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 bg-white text-red-600 text-xs font-semibold rounded-lg hover:bg-red-50/50 transition-all duration-200 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-pastel-red-text/20 bg-bg-card text-pastel-red-text text-xs font-semibold rounded-lg hover:bg-pastel-red/50 transition-all duration-200 cursor-pointer"
           >
             <Trash2 size={14} />
             <span>Clear History Log</span>
@@ -75,11 +75,11 @@ export default function HistoryPage() {
 
       {/* History content */}
       {history.length > 0 ? (
-        <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-bg-card border border-border-subtle rounded-xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                <tr className="bg-bg-neutral border-b border-border-subtle">
                   <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Timestamp</th>
                   <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Incident Location</th>
                   <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Event Cause</th>
@@ -89,9 +89,9 @@ export default function HistoryPage() {
                   <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Severity</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F3F4F6]">
+              <tbody className="divide-y divide-border-subtle">
                 {history.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-[#F9FAFB] transition-colors duration-150">
+                  <tr key={idx} className="hover:bg-bg-neutral transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2 text-xs font-mono text-[#4B5563]">
                         <Calendar size={12} className="text-[#9CA3AF]" />
@@ -122,9 +122,9 @@ export default function HistoryPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider ${
-                        item.severity === 'CRITICAL' ? 'bg-red-50 text-red-600 border border-red-200/50' :
-                        item.severity === 'WARNING' ? 'bg-amber-50 text-amber-600 border border-amber-200/50' :
-                        'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
+                        item.severity === 'CRITICAL' ? 'bg-pastel-red text-pastel-red-text border border-pastel-red-text/10' :
+                        item.severity === 'WARNING' ? 'bg-pastel-amber text-pastel-amber-text border border-pastel-amber-text/10' :
+                        'bg-pastel-green text-pastel-green-text border border-pastel-green-text/10'
                       }`}>
                         {item.severity}
                       </span>
@@ -136,8 +136,8 @@ export default function HistoryPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white border-2 border-dashed border-[#E5E7EB] rounded-xl text-center py-20 px-6 max-w-lg mx-auto animate-slide-up">
-          <div className="flex items-center justify-center w-12 h-12 border border-[#E5E7EB] rounded-full mx-auto mb-4 text-[#9CA3AF]">
+        <div className="bg-bg-card border-2 border-dashed border-border-subtle rounded-xl text-center py-20 px-6 max-w-lg mx-auto animate-slide-up">
+          <div className="flex items-center justify-center w-12 h-12 border border-border-subtle rounded-full mx-auto mb-4 text-[#9CA3AF]">
             <History size={20} />
           </div>
           <h2 className="text-base font-semibold text-[#111111] mb-2">No Predictions Found</h2>

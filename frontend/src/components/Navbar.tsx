@@ -17,7 +17,7 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-[#E5E7EB]">
+    <header className="sticky top-0 z-50 bg-bg-main/80 backdrop-blur-md border-b border-border-subtle">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
           <span className="w-2 h-2 rounded-full bg-[#111111] group-hover:scale-125 transition-transform" />
@@ -33,8 +33,8 @@ export default function Navbar() {
                 href={link.href}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
                   isActive
-                    ? 'text-[#111111] bg-[#111111]/5'
-                    : 'text-[#9CA3AF] hover:text-[#111111] hover:bg-[#F3F4F6]'
+                    ? 'text-[#111111] bg-bg-neutral'
+                    : 'text-[#9CA3AF] hover:text-[#111111] hover:bg-bg-neutral'
                 }`}
               >
                 <Icon size={13} strokeWidth={1.5} />

@@ -123,13 +123,13 @@ export default function ModelPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#FAFAFA] p-8">
+    <main className="min-h-screen bg-bg-main p-8">
 
       {/* Title */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#111111] flex items-center gap-3">
           <Cpu size={28} className="text-[#111111]" />
-          <span>Model Architecture & Performance Console</span>
+          <span>Model Architecture &amp; Performance Console</span>
         </h1>
         <p className="mt-2 text-sm text-[#6B7280]">
           Validate the performance, statistical errors, and feature weights of the underlying machine learning models.
@@ -137,11 +137,11 @@ export default function ModelPage() {
       </div>
 
       {error && (
-        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm flex items-center gap-3">
-          <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />
-          <div className="text-[#111111]">
+        <div className="mb-6 bg-pastel-amber border border-pastel-amber-text/10 rounded-lg p-4 text-sm flex items-center gap-3">
+          <AlertTriangle size={18} className="text-pastel-amber-text flex-shrink-0" />
+          <div className="text-pastel-amber-text">
             <span className="font-semibold">Showing Offline Pre-computed Models</span>
-            <span className="text-[#6B7280]"> — Backend FastAPI server was not reachable. These metrics correspond to the validation test logs of our LightGBM + XGBoost ensemble training loop.</span>
+            <span> — Backend FastAPI server was not reachable. These metrics correspond to the validation test logs of our LightGBM + XGBoost ensemble training loop.</span>
           </div>
         </div>
       )}
@@ -157,7 +157,7 @@ export default function ModelPage() {
           {metricPairs.map((item, idx) => (
             <div
               key={idx}
-              className="bg-white border border-[#E5E7EB] rounded-xl p-5 flex flex-col gap-1 hover:shadow-sm hover:scale-[1.02] transition-all duration-200"
+              className="bg-bg-card border border-border-subtle rounded-xl p-5 flex flex-col gap-1 hover:shadow-sm hover:scale-[1.02] transition-all duration-200"
             >
               <div className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">
                 {item.label}
@@ -174,7 +174,7 @@ export default function ModelPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
         {/* Left Column: LightGBM Feature Importances */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-sm transition-all duration-200">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 hover:shadow-sm transition-all duration-200">
           <div className="flex items-center gap-2 mb-5">
             <BarChart2 size={15} className="text-[#6B7280]" />
             <span className="text-sm font-semibold text-[#111111]">LightGBM Feature Importances (Top 20)</span>
@@ -193,7 +193,7 @@ export default function ModelPage() {
                       {item.importance.toLocaleString()}
                     </span>
                   </div>
-                  <div className="h-1.5 bg-[#F3F4F6] rounded-full w-full">
+                  <div className="h-1.5 bg-bg-neutral rounded-full w-full">
                     <div
                       className="h-1.5 bg-[#111111] rounded-full transition-all duration-500"
                       style={{ width: `${pct}%` }}
@@ -206,7 +206,7 @@ export default function ModelPage() {
         </div>
 
         {/* Right Column: Feature Engineering Summary */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 h-fit hover:shadow-sm transition-all duration-200">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 h-fit hover:shadow-sm transition-all duration-200">
           <div className="flex items-center gap-2 mb-5">
             <List size={15} className="text-[#6B7280]" />
             <span className="text-sm font-semibold text-[#111111]">Feature Engineering Summary</span>
@@ -215,7 +215,7 @@ export default function ModelPage() {
           <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#E5E7EB]">
+                <tr className="border-b border-border-subtle">
                   <th className="text-left text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF] pb-3 pr-4">Feature</th>
                   <th className="text-left text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF] pb-3">Description</th>
                 </tr>
@@ -242,13 +242,13 @@ export default function ModelPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Adaptive Column Resolver Output */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-sm transition-all duration-200">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 hover:shadow-sm transition-all duration-200">
           <div className="flex items-center gap-2 mb-5">
             <Database size={15} className="text-[#6B7280]" />
             <span className="text-sm font-semibold text-[#111111]">Adaptive Column Resolver Output</span>
           </div>
 
-          <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4 max-h-[250px] overflow-y-auto">
+          <div className="bg-bg-neutral border border-border-subtle rounded-lg p-4 max-h-[250px] overflow-y-auto">
             <pre className="font-mono text-xs text-[#111111] whitespace-pre-wrap">
               {JSON.stringify(resolvedColumns, null, 2)}
             </pre>
@@ -256,13 +256,13 @@ export default function ModelPage() {
         </div>
 
         {/* Total Features code display */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-sm transition-all duration-200">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 hover:shadow-sm transition-all duration-200">
           <div className="flex items-center gap-2 mb-5">
             <Code size={15} className="text-[#6B7280]" />
             <span className="text-sm font-semibold text-[#111111]">Total Features Used in Training ({featureCols.length})</span>
           </div>
 
-          <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4 max-h-[250px] overflow-y-auto">
+          <div className="bg-bg-neutral border border-border-subtle rounded-lg p-4 max-h-[250px] overflow-y-auto">
             <pre className="font-mono text-xs text-[#6B7280] whitespace-pre-wrap leading-relaxed">
               {featureCols.join('\n')}
             </pre>

@@ -3,13 +3,13 @@ import { Cpu, MapPin, ShieldAlert, ScanEye, LayoutDashboard } from 'lucide-react
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center px-6 py-20">
+    <main className="min-h-screen bg-bg-main flex flex-col items-center justify-center px-6 py-20">
 
       {/* Hero Section */}
       <div className="max-w-3xl text-center animate-slide-up">
 
         {/* Pill Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#E5E7EB] rounded-full mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-border-subtle rounded-full mb-8">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#6B7280]">
             Bengaluru Traffic Command Interface
           </span>
@@ -38,7 +38,7 @@ export default function Home() {
           </Link>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-6 py-3 border border-[#E5E7EB] text-[#111111] text-sm font-medium rounded-lg bg-white hover:shadow-sm hover:scale-[1.02] transition-all duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3 border border-border-subtle text-[#111111] text-sm font-medium rounded-lg bg-bg-card hover:shadow-sm hover:scale-[1.02] transition-all duration-200"
           >
             <LayoutDashboard size={18} />
             <span>System Dashboard</span>
@@ -50,8 +50,8 @@ export default function Home() {
       <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {/* Card 1 — Dual-Model Ensemble */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-md transition-all duration-200">
-          <div className="flex items-center justify-center w-10 h-10 border border-[#E5E7EB] rounded-lg mb-4 text-[#111111]">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 hover:shadow-md transition-all duration-200">
+          <div className="flex items-center justify-center w-10 h-10 border border-border-subtle rounded-lg mb-4 text-[#111111]">
             <Cpu size={20} />
           </div>
           <h3 className="text-sm font-semibold text-[#111111] mb-2 text-left">
@@ -64,8 +64,8 @@ export default function Home() {
         </div>
 
         {/* Card 2 — DBSCAN Hotspot Mapping */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-md transition-all duration-200">
-          <div className="flex items-center justify-center w-10 h-10 border border-[#E5E7EB] rounded-lg mb-4 text-[#111111]">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 hover:shadow-md transition-all duration-200">
+          <div className="flex items-center justify-center w-10 h-10 border border-border-subtle rounded-lg mb-4 text-[#111111]">
             <MapPin size={20} />
           </div>
           <h3 className="text-sm font-semibold text-[#111111] mb-2 text-left">
@@ -78,8 +78,8 @@ export default function Home() {
         </div>
 
         {/* Card 3 — Automated Barricade Plans */}
-        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-md transition-all duration-200">
-          <div className="flex items-center justify-center w-10 h-10 border border-[#E5E7EB] rounded-lg mb-4 text-[#111111]">
+        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 hover:shadow-md transition-all duration-200">
+          <div className="flex items-center justify-center w-10 h-10 border border-border-subtle rounded-lg mb-4 text-[#111111]">
             <ShieldAlert size={20} />
           </div>
           <h3 className="text-sm font-semibold text-[#111111] mb-2 text-left">

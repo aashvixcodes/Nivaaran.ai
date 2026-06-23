@@ -107,7 +107,7 @@ export default function DashboardPage() {
       <FilterSidebar onApply={handleApplyFilters} isLoading={loading} />
 
       {/* Main Content Pane */}
-      <main className="flex-1 overflow-y-auto bg-[#FAFAFA] p-8">
+      <main className="flex-1 overflow-y-auto bg-bg-main p-8">
 
         {/* Title */}
         <div className="mb-8">
@@ -121,8 +121,8 @@ export default function DashboardPage() {
         </div>
 
         {error && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-            <AlertTriangle size={18} className="flex-shrink-0 text-amber-500" />
+          <div className="mb-6 flex items-center gap-3 rounded-lg border border-pastel-amber-text/10 bg-pastel-amber p-4 text-sm text-pastel-amber-text">
+            <AlertTriangle size={18} className="flex-shrink-0 text-pastel-amber-text" />
             <div>
               <span className="font-semibold">Showing Offline Cache Data</span>
               <span className="ml-1">— Backend FastAPI server was not reachable. Pre-computed historical metrics are shown.</span>
@@ -133,8 +133,8 @@ export default function DashboardPage() {
         {/* KPI Row */}
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Total Incidents */}
-          <div className="flex items-center gap-5 rounded-xl border border-[#E5E7EB] bg-white p-6 transition-all duration-200 hover:shadow-sm hover:scale-[1.02]">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#F3F4F6] text-[#111111]">
+          <div className="flex items-center gap-5 rounded-xl border border-border-subtle bg-bg-card p-6 transition-all duration-200 hover:shadow-sm hover:scale-[1.02]">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-bg-neutral text-[#111111]">
               <Activity size={22} />
             </div>
             <div>
@@ -148,8 +148,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Average Surge */}
-          <div className="flex items-center gap-5 rounded-xl border border-[#E5E7EB] bg-white p-6 transition-all duration-200 hover:shadow-sm hover:scale-[1.02]">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#F3F4F6] text-[#111111]">
+          <div className="flex items-center gap-5 rounded-xl border border-border-subtle bg-bg-card p-6 transition-all duration-200 hover:shadow-sm hover:scale-[1.02]">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-bg-neutral text-[#111111]">
               <Clock size={22} />
             </div>
             <div>
@@ -163,8 +163,8 @@ export default function DashboardPage() {
           </div>
 
           {/* High Priority */}
-          <div className="flex items-center gap-5 rounded-xl border border-[#E5E7EB] bg-white p-6 transition-all duration-200 hover:shadow-sm hover:scale-[1.02]">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#F3F4F6] text-[#111111]">
+          <div className="flex items-center gap-5 rounded-xl border border-border-subtle bg-bg-card p-6 transition-all duration-200 hover:shadow-sm hover:scale-[1.02]">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-bg-neutral text-[#111111]">
               <Layers size={22} />
             </div>
             <div>
@@ -182,7 +182,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
 
           {/* Hourly Profile Chart — spans 8 cols */}
-          <div className="rounded-xl border border-[#E5E7EB] bg-white p-6 lg:col-span-8">
+          <div className="rounded-xl border border-border-subtle bg-bg-card p-6 lg:col-span-8">
             <div className="mb-4 flex items-center gap-2">
               <Clock size={16} className="text-[#6B7280]" />
               <span className="text-sm font-semibold text-[#111111]">Hourly Incident Density Profile</span>
@@ -229,7 +229,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Top Congested Roads — spans 4 cols, 2 rows */}
-          <div className="rounded-xl border border-[#E5E7EB] bg-white p-6 lg:col-span-4 lg:row-span-2">
+          <div className="rounded-xl border border-border-subtle bg-bg-card p-6 lg:col-span-4 lg:row-span-2">
             <div className="mb-4 flex items-center gap-2">
               <TrendingUp size={16} className="text-[#6B7280]" />
               <span className="text-sm font-semibold text-[#111111]">Top Congested Road Nodes</span>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                 {topRoads.map((road, idx) => (
                   <div
                     key={idx}
-                    className={`pb-3 ${idx !== topRoads.length - 1 ? 'border-b border-[#E5E7EB]' : ''}`}
+                    className={`pb-3 ${idx !== topRoads.length - 1 ? 'border-b border-border-subtle' : ''}`}
                   >
                     <div className="mb-1 flex items-center justify-between">
                       <span className="max-w-[170px] truncate text-xs font-medium text-[#111111]">
@@ -250,7 +250,7 @@ export default function DashboardPage() {
                         {road.surge.toFixed(1)}%
                       </span>
                     </div>
-                    <div className="h-1 w-full overflow-hidden rounded-full bg-[#F3F4F6]">
+                    <div className="h-1 w-full overflow-hidden rounded-full bg-bg-neutral">
                       <div
                         className="h-full rounded-full bg-[#111111] transition-all duration-300"
                         style={{ width: `${road.surge}%` }}
@@ -260,14 +260,14 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-[#E5E7EB] p-10 text-center text-xs text-[#9CA3AF]">
+              <div className="rounded-lg border border-dashed border-border-subtle p-10 text-center text-xs text-[#9CA3AF]">
                 No congestion details match filters.
               </div>
             )}
           </div>
 
           {/* Incident Cause Distribution — spans 4 cols */}
-          <div className="rounded-xl border border-[#E5E7EB] bg-white p-6 lg:col-span-4">
+          <div className="rounded-xl border border-border-subtle bg-bg-card p-6 lg:col-span-4">
             <div className="mb-4 flex items-center gap-2">
               <Activity size={16} className="text-[#6B7280]" />
               <span className="text-sm font-semibold text-[#111111]">Incident Causes Share</span>
@@ -287,7 +287,7 @@ export default function DashboardPage() {
                           {c.value.toLocaleString()}
                         </span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#F3F4F6]">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-neutral">
                         <div
                           className="h-full rounded-full bg-[#111111] transition-all duration-300"
                           style={{ width: `${pct}%` }}
@@ -298,14 +298,14 @@ export default function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-[#E5E7EB] p-10 text-center text-xs text-[#9CA3AF]">
+              <div className="rounded-lg border border-dashed border-border-subtle p-10 text-center text-xs text-[#9CA3AF]">
                 No active events to list.
               </div>
             )}
           </div>
 
           {/* Corridor Breakdown — spans 4 cols */}
-          <div className="rounded-xl border border-[#E5E7EB] bg-white p-6 lg:col-span-4">
+          <div className="rounded-xl border border-border-subtle bg-bg-card p-6 lg:col-span-4">
             <div className="mb-4 flex items-center gap-2">
               <Layers size={16} className="text-[#6B7280]" />
               <span className="text-sm font-semibold text-[#111111]">Surge Incidents by Corridor</span>
@@ -325,7 +325,7 @@ export default function DashboardPage() {
                           {c.value.toLocaleString()}
                         </span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#F3F4F6]">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-bg-neutral">
                         <div
                           className="h-full rounded-full bg-[#6B7280] transition-all duration-300"
                           style={{ width: `${pct}%` }}
@@ -336,7 +336,7 @@ export default function DashboardPage() {
                 })}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-[#E5E7EB] p-10 text-center text-xs text-[#9CA3AF]">
+              <div className="rounded-lg border border-dashed border-border-subtle p-10 text-center text-xs text-[#9CA3AF]">
                 No corridors match filters.
               </div>
             )}
