@@ -24,9 +24,7 @@ export default function Home() {
 
         {/* Subheadline */}
         <p className="text-base md:text-lg text-[#6B7280] max-w-xl mx-auto leading-relaxed mb-10">
-          Nivaaran.ai computes real-time traffic surge impacts using a custom-trained
-          LightGBM &amp; XGBoost ensemble, generating automated lane-diversion blueprints
-          and police deployments.
+          Real-time traffic congestion prediction and automated resource dispatch optimization.
         </p>
 
         {/* CTA Buttons */}
