@@ -1,15 +1,3 @@
----
-title: Nivaaran.ai
-emoji: 🚦
-colorFrom: red
-colorTo: orange
-sdk: streamlit
-sdk_version: 1.35.0
-app_file: app.py
-pinned: true
-license: mit
----
-
 # 🚦 Nivaaran.ai — Event-Driven Congestion Predictive Dispatch Engine
 
 Nivaaran.ai is an intelligent traffic command and resource orchestration system designed for high-density metropolitan networks like Bengaluru. It proactively forecasts traffic congestion surges caused by urban incidents (both planned events like IPL matches and unplanned breakdowns) and translates predictions into automated dispatch directives.
@@ -109,10 +97,3 @@ Ensure you have **Python 3.10+** and **Node.js 18+** installed.
    ```
    Open `http://localhost:3000` in your browser.
 
-### 3. Alternative: Run the Streamlit Dashboard (Standalone)
-If you want to run the single-file fallback Streamlit dashboard:
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-App runs at `http://localhost:8501`.
