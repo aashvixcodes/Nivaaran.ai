@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { MapPin, Crosshair, HelpCircle } from 'lucide-react';
 
 interface MapProps {
@@ -9,13 +9,11 @@ interface MapProps {
   onChange: (lat: number, lon: number) => void;
 }
 
-// Bounding box for Bengaluru coordinate space
 const LAT_MIN = 12.8400;
 const LAT_MAX = 13.0600;
 const LON_MIN = 77.5000;
 const LON_MAX = 77.7000;
 
-// Key locations to plot on our vector map
 const METRO_STATIONS = [
   { name: "Majestic Node", lat: 12.9756, lon: 77.5729, type: "metro" },
   { name: "Indiranagar Node", lat: 12.9783, lon: 77.6413, type: "metro" },
@@ -41,32 +39,27 @@ const INTERSECTIONS = [
 
 const ALL_NODES = [...METRO_STATIONS, ...COMMERCIAL_MARKETS, ...INTERSECTIONS];
 
-// Major roads (lines) to draw on the vector map
 const ARTERIAL_ROADS = [
-  // Outer Ring Road (ORR)
   [
-    { lat: 13.0419, lon: 77.5947 }, // Hebbal
-    { lat: 13.0053, lon: 77.6521 }, // Tin Factory
-    { lat: 12.9570, lon: 77.6963 }, // Marathahalli
-    { lat: 12.9200, lon: 77.6656 }, // Ibblur
-    { lat: 12.9187, lon: 77.6215 }, // Silk Board
+    { lat: 13.0419, lon: 77.5947 },
+    { lat: 13.0053, lon: 77.6521 },
+    { lat: 12.9570, lon: 77.6963 },
+    { lat: 12.9200, lon: 77.6656 },
+    { lat: 12.9187, lon: 77.6215 },
   ],
-  // Hosur Road
   [
-    { lat: 12.9754, lon: 77.6067 }, // MG Road
-    { lat: 12.9187, lon: 77.6215 }, // Silk Board
-    { lat: 12.8447, lon: 77.6601 }, // ECity
+    { lat: 12.9754, lon: 77.6067 },
+    { lat: 12.9187, lon: 77.6215 },
+    { lat: 12.8447, lon: 77.6601 },
   ],
-  // Mysore Road
   [
-    { lat: 12.9756, lon: 77.5729 }, // Majestic
-    { lat: 12.9287, lon: 77.5300 }, // Kengeri direction
+    { lat: 12.9756, lon: 77.5729 },
+    { lat: 12.9287, lon: 77.5300 },
   ],
-  // Bellary Road
   [
-    { lat: 12.9754, lon: 77.6067 }, // MG Road
-    { lat: 13.0067, lon: 77.5843 }, // Mekhri Circle
-    { lat: 13.0419, lon: 77.5947 }, // Hebbal
+    { lat: 12.9754, lon: 77.6067 },
+    { lat: 13.0067, lon: 77.5843 },
+    { lat: 13.0419, lon: 77.5947 },
   ]
 ];
 
@@ -74,109 +67,87 @@ export default function Map({ latitude, longitude, onChange }: MapProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [hoverNode, setHoverNode] = useState<string | null>(null);
 
-  // Convert lat/lon coordinates to SVG pixels
   const getCoordinates = (lat: number, lon: number) => {
-    if (!svgRef.current) return { x: 0, y: 0 };
-    
-    // Width and height of SVG container
     const width = 500;
     const height = 400;
-
-    // Linear mapping
     const x = ((lon - LON_MIN) / (LON_MAX - LON_MIN)) * width;
     const y = height - (((lat - LAT_MIN) / (LAT_MAX - LAT_MIN)) * height);
-    
     return { x, y };
   };
 
   const handleMapClick = (e: React.MouseEvent<SVGSVGElement>) => {
     if (!svgRef.current) return;
-
     const rect = svgRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
-
     const width = rect.width;
     const height = rect.height;
-
-    // Convert pixel back to lat/lon
     const clickLon = LON_MIN + (clickX / width) * (LON_MAX - LON_MIN);
     const clickLat = LAT_MAX - (clickY / height) * (LAT_MAX - LAT_MIN);
-
     onChange(parseFloat(clickLat.toFixed(5)), parseFloat(clickLon.toFixed(5)));
   };
 
   const currentPos = getCoordinates(latitude, longitude);
 
   return (
-    <div className="map-wrapper">
-      <div className="px-4 py-3 border-b border-[var(--border-subtle)] flex items-center justify-between bg-black/10">
+    <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
+      {/* Header */}
+      <div className="px-5 py-3 border-b border-[#E5E7EB] flex items-center justify-between bg-[#F9FAFB]">
         <div className="flex items-center gap-2">
-          <Crosshair size={14} className="text-[var(--text-secondary)]" />
-          <span className="text-[11px] uppercase tracking-widest text-[var(--text-secondary)] font-semibold">
-            Bengaluru Command Vector Map Grid
+          <Crosshair size={14} className="text-[#9CA3AF]" />
+          <span className="text-[11px] uppercase tracking-widest text-[#6B7280] font-semibold">
+            Bengaluru Vector Map
           </span>
         </div>
-        <div className="text-[11px] font-mono text-[var(--accent-signal)]">
-          GPS: {latitude.toFixed(4)}, {longitude.toFixed(4)}
+        <div className="text-[11px] font-mono text-[#111111]">
+          {latitude.toFixed(4)}, {longitude.toFixed(4)}
         </div>
       </div>
 
-      <div style={{ position: 'relative', width: '100%', height: '360px', overflow: 'hidden' }}>
+      {/* SVG Map */}
+      <div className="relative w-full h-[360px] overflow-hidden">
         <svg
           ref={svgRef}
-          className="w-full h-full cursor-crosshair select-none bg-[#050810]"
+          className="w-full h-full cursor-crosshair select-none bg-[#F9FAFB]"
           onClick={handleMapClick}
           viewBox="0 0 500 400"
           preserveAspectRatio="none"
         >
-          {/* SVG Definitions for Gradients and Markers */}
           <defs>
             <pattern id="gridPattern" width="25" height="25" patternUnits="userSpaceOnUse">
-              <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(45, 212, 212, 0.03)" strokeWidth="1" />
-              <circle cx="0" cy="0" r="1.2" fill="rgba(45, 212, 212, 0.08)" />
+              <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#E5E7EB" strokeWidth="0.5" />
             </pattern>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
           </defs>
 
-          {/* Grid Background */}
           <rect width="100%" height="100%" fill="url(#gridPattern)" />
 
-          {/* Draw Arterial Roads */}
+          {/* Arterial Roads */}
           {ARTERIAL_ROADS.map((road, idx) => {
             const points = road.map(p => {
               const { x, y } = getCoordinates(p.lat, p.lon);
               return `${x},${y}`;
             }).join(' ');
-            
             return (
               <polyline
                 key={idx}
                 points={points}
                 fill="none"
-                stroke="rgba(255, 255, 255, 0.04)"
-                strokeWidth="2.5"
+                stroke="#D1D5DB"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             );
           })}
           
-          {/* Highlight Selected Corridor Line if matching coordinates */}
-          {/* Draw plotted nodes */}
+          {/* Nodes */}
           {ALL_NODES.map((node, idx) => {
             const { x, y } = getCoordinates(node.lat, node.lon);
             const isHovered = hoverNode === node.name;
-            let color = "rgba(148, 163, 184, 0.4)"; // Default secondary
-            if (node.type === "metro") color = "rgba(45, 212, 212, 0.5)";
-            if (node.type === "market") color = "rgba(245, 158, 11, 0.5)";
-            if (node.type === "junction") color = "rgba(239, 68, 68, 0.5)";
+            let color = "#9CA3AF";
+            if (node.type === "metro") color = "#111111";
+            if (node.type === "market") color = "#6B7280";
+            if (node.type === "junction") color = "#374151";
 
             return (
               <g 
@@ -194,116 +165,36 @@ export default function Map({ latitude, longitude, onChange }: MapProps) {
                   cy={y}
                   r={isHovered ? 8 : 4.5}
                   fill={color}
-                  stroke="rgba(0,0,0,0.4)"
+                  stroke="#FFFFFF"
                   strokeWidth="1.5"
                   style={{ transition: 'all 0.2s' }}
                 />
-                {isHovered && (
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r="14"
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="1"
-                    className="animate-ping"
-                    style={{ animationDuration: '2s' }}
-                  />
-                )}
               </g>
             );
           })}
 
-          {/* Active Incident Beacon (Current selection pointer) */}
+          {/* Active Crosshair */}
           {latitude && longitude && (
             <g>
-              <line
-                x1="0"
-                y1={currentPos.y}
-                x2="500"
-                y2={currentPos.y}
-                stroke="rgba(45, 212, 212, 0.15)"
-                strokeWidth="1"
-                strokeDasharray="3,3"
-              />
-              <line
-                x1={currentPos.x}
-                y1="0"
-                x2={currentPos.x}
-                y2="400"
-                stroke="rgba(45, 212, 212, 0.15)"
-                strokeWidth="1"
-                strokeDasharray="3,3"
-              />
-              <circle
-                cx={currentPos.x}
-                cy={currentPos.y}
-                r="10"
-                fill="none"
-                stroke="var(--accent-signal)"
-                strokeWidth="1"
-                className="animate-ping"
-                style={{ animationDuration: '1.5s' }}
-              />
-              <circle
-                cx={currentPos.x}
-                cy={currentPos.y}
-                r="4"
-                fill="var(--accent-signal)"
-                stroke="#060913"
-                strokeWidth="2"
-                filter="url(#glow)"
-              />
+              <line x1="0" y1={currentPos.y} x2="500" y2={currentPos.y} stroke="#D1D5DB" strokeWidth="1" strokeDasharray="3,3" />
+              <line x1={currentPos.x} y1="0" x2={currentPos.x} y2="400" stroke="#D1D5DB" strokeWidth="1" strokeDasharray="3,3" />
+              <circle cx={currentPos.x} cy={currentPos.y} r="6" fill="#111111" stroke="#FFFFFF" strokeWidth="2" />
             </g>
           )}
         </svg>
 
-        {/* Hover Tooltip Overlay */}
+        {/* Hover Tooltip */}
         {hoverNode && (
-          <div 
-            style={{
-              position: 'absolute',
-              bottom: '12px',
-              left: '12px',
-              background: 'rgba(14, 19, 36, 0.9)',
-              border: '1px solid var(--border-strong)',
-              borderRadius: '4px',
-              padding: '6px 12px',
-              fontSize: '11px',
-              color: 'var(--text-primary)',
-              backdropFilter: 'blur(4px)',
-              pointerEvents: 'none',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              animation: 'fade-up 0.15s ease'
-            }}
-          >
-            <MapPin size={12} className="text-[var(--accent-signal)]" style={{ color: 'var(--accent-signal)' }} />
-            <span>{hoverNode}</span>
+          <div className="absolute bottom-3 left-3 bg-white border border-[#E5E7EB] rounded-lg px-3 py-2 text-xs text-[#111111] shadow-md pointer-events-none flex items-center gap-1.5 animate-fade-in">
+            <MapPin size={12} className="text-[#6B7280]" />
+            <span className="font-medium">{hoverNode}</span>
           </div>
         )}
         
-        {/* Click Instruction Tip */}
-        <div 
-          style={{
-            position: 'absolute',
-            top: '12px',
-            right: '12px',
-            background: 'rgba(6, 9, 19, 0.6)',
-            borderRadius: '4px',
-            padding: '4px 8px',
-            fontSize: '9px',
-            color: 'var(--text-tertiary)',
-            pointerEvents: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px'
-          }}
-        >
+        {/* Click Tip */}
+        <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm rounded-md px-2 py-1 text-[9px] text-[#9CA3AF] pointer-events-none flex items-center gap-1">
           <HelpCircle size={10} />
-          <span>Click grid anywhere to pin new coordinate</span>
+          <span>Click to pin coordinate</span>
         </div>
       </div>
     </div>

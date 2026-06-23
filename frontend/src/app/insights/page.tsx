@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import FilterSidebar from '@/components/FilterSidebar';
-import { Sliders, Award, Clock, Calendar, CheckSquare, BarChart, TrendingUp, HelpCircle } from 'lucide-react';
+import { Sliders, Award, Clock, Calendar, CheckSquare, BarChart, TrendingUp, HelpCircle, Activity } from 'lucide-react';
 
 export default function InsightsPage() {
   const [activeTab, setActiveTab] = useState('post-event');
@@ -51,21 +51,25 @@ export default function InsightsPage() {
     : 100;
 
   return (
-    <div style={{ display: 'flex', minHeight: 'calc(100vh - 84px)' }}>
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-64px)]">
       {/* Sidebar filters */}
       <FilterSidebar onApply={handleApplyFilters} isLoading={loading} />
 
       {/* Main Insights Dashboard */}
-      <main className="main-content" style={{ flex: '1', padding: '24px', overflowY: 'auto' }}>
+      <main className="flex-1 p-6 lg:p-10 overflow-y-auto max-w-7xl mx-auto w-full animate-fade-in">
         
         {/* Title */}
-        <div className="title-section">
-          <h1>Traffic Insights & Analytics</h1>
-          <p>Explore historic bottlenecks, resolution analytics, and planned event predictions.</p>
+        <div className="mb-8 pb-6 border-b border-[#E5E7EB]">
+          <div className="flex items-center gap-2 mb-2">
+            <Activity size={18} className="text-[#111111]" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">Advanced Analytics</span>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-[#111111] mb-2">Traffic Insights &amp; Analytics</h1>
+          <p className="text-sm text-[#6B7280]">Explore historic bottlenecks, resolution analytics, and planned event predictions.</p>
         </div>
 
         {/* Tab Selection */}
-        <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-subtle)', marginBottom: '24px', paddingBottom: '1px' }}>
+        <div className="flex gap-2 border-b border-[#E5E7EB] mb-8 overflow-x-auto whitespace-nowrap">
           {[
             { id: 'post-event', label: 'Post-Event Learning Loop' },
             { id: 'resolution', label: 'Resolution Intelligence' },
@@ -74,18 +78,11 @@ export default function InsightsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              style={{
-                background: 'none',
-                border: 'none',
-                borderBottom: activeTab === tab.id ? '2px solid var(--accent-signal)' : '2px solid transparent',
-                color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                padding: '8px 16px',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                marginBottom: '-1px'
-              }}
+              className={`pb-4 px-4 text-xs font-semibold border-b-2 transition-all duration-200 cursor-pointer ${
+                activeTab === tab.id 
+                  ? 'border-[#111111] text-[#111111]' 
+                  : 'border-transparent text-[#6B7280] hover:text-[#111111]'
+              }`}
             >
               {tab.label}
             </button>
@@ -94,29 +91,33 @@ export default function InsightsPage() {
 
         {/* Tab Content Display */}
         {data ? (
-          <div>
+          <div className="space-y-6">
             
             {/* Tab 1: Post-Event Learning Loop */}
             {activeTab === 'post-event' && (
-              <div className="dashboard-grid">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 
                 {/* Risk Roads */}
-                <div className="card col-6">
-                  <div className="card-title">
-                    <TrendingUp size={15} style={{ color: 'var(--accent-critical)' }} />
-                    <span>Top 15 High-Risk Road Segments</span>
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                    <TrendingUp size={16} className="text-[#111111]" />
+                    <h2 className="text-sm font-semibold text-[#111111]">Top 10 High-Risk Road Segments</h2>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  
+                  <div className="space-y-4">
                     {data.insights.top_risk_roads?.slice(0, 10).map((r: any, idx: number) => {
                       const fillPct = (r.risk_score / maxRisk) * 100;
                       return (
-                        <div key={idx} className="bar-row">
-                          <div className="bar-header">
-                            <span className="bar-name">{r.road_name}</span>
-                            <span className="bar-val" style={{ color: 'var(--accent-critical)' }}>{r.risk_score.toFixed(3)}</span>
+                        <div key={idx} className="space-y-1.5">
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="font-medium text-[#374151]">{r.road_name}</span>
+                            <span className="font-mono font-semibold text-[#111111]">{r.risk_score.toFixed(3)}</span>
                           </div>
-                          <div className="bar-track">
-                            <div className="bar-fill" style={{ width: `${fillPct}%`, backgroundColor: 'var(--accent-critical)' }}></div>
+                          <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-[#111111] rounded-full transition-all duration-300" 
+                              style={{ width: `${fillPct}%` }}
+                            ></div>
                           </div>
                         </div>
                       );
@@ -125,25 +126,29 @@ export default function InsightsPage() {
                 </div>
 
                 {/* Road+Cause Recurrence Pairs */}
-                <div className="card col-6">
-                  <div className="card-title">
-                    <BarChart size={15} style={{ color: 'var(--accent-warning)' }} />
-                    <span>Top 15 Road + Cause Recurrence Pairs</span>
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                    <BarChart size={16} className="text-[#111111]" />
+                    <h2 className="text-sm font-semibold text-[#111111]">Top 10 Road &amp; Cause Recurrence Pairs</h2>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  
+                  <div className="space-y-4">
                     {data.insights.top_recurrence?.slice(0, 10).map((r: any, idx: number) => {
                       const fillPct = (r.recurrence_frequency / maxRecur) * 100;
                       return (
-                        <div key={idx} className="bar-row">
-                          <div className="bar-header">
-                            <span className="bar-name" style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                              <span style={{ textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', maxWidth: '200px' }}>{r.road_name}</span>
-                              <span style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--text-tertiary)' }}>({r.cause})</span>
-                            </span>
-                            <span className="bar-val" style={{ color: 'var(--accent-warning)' }}>{r.recurrence_frequency.toFixed(3)}</span>
+                        <div key={idx} className="space-y-1.5">
+                          <div className="flex justify-between items-center text-xs">
+                            <div className="flex items-baseline gap-1.5 overflow-hidden max-w-[70%]">
+                              <span className="font-medium text-[#374151] truncate">{r.road_name}</span>
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] shrink-0">({r.cause})</span>
+                            </div>
+                            <span className="font-mono font-semibold text-[#111111]">{r.recurrence_frequency.toFixed(3)}</span>
                           </div>
-                          <div className="bar-track">
-                            <div className="bar-fill" style={{ width: `${fillPct}%`, backgroundColor: 'var(--accent-warning)' }}></div>
+                          <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-[#6B7280] rounded-full transition-all duration-300" 
+                              style={{ width: `${fillPct}%` }}
+                            ></div>
                           </div>
                         </div>
                       );
@@ -152,42 +157,42 @@ export default function InsightsPage() {
                 </div>
 
                 {/* Spatial Overlap Scatter Plot */}
-                <div className="card col-12">
-                  <div className="card-title">
-                    <HelpCircle size={15} style={{ color: 'var(--accent-signal)' }} />
-                    <span>Multi-Incident Spatial Overlap vs Congestion Surge Index</span>
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm xl:col-span-2">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                    <HelpCircle size={16} className="text-[#111111]" />
+                    <h2 className="text-sm font-semibold text-[#111111]">Multi-Incident Spatial Overlap vs Congestion Surge Index</h2>
                   </div>
-                  <div style={{ position: 'relative', width: '100%', padding: '10px 0' }}>
-                    <svg viewBox="0 0 500 160" className="w-full bg-black/10 border border-dashed border-[var(--border-subtle)] rounded-lg" style={{ overflow: 'visible' }}>
+                  
+                  <div className="relative w-full">
+                    <svg viewBox="0 0 500 160" className="w-full bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg overflow-visible">
                       {/* Gridlines */}
-                      <line x1="0" y1="10" x2="500" y2="10" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
-                      <line x1="0" y1="80" x2="500" y2="80" stroke="rgba(255,255,255,0.02)" strokeWidth="1" />
-                      <line x1="0" y1="150" x2="500" y2="150" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+                      <line x1="0" y1="10" x2="500" y2="10" stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray="2,2" />
+                      <line x1="0" y1="80" x2="500" y2="80" stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray="2,2" />
+                      <line x1="0" y1="150" x2="500" y2="150" stroke="#D1D5DB" strokeWidth="1" />
                       
                       {/* Plot scatter points */}
                       {data.insights.spatial_overlap?.map((pt: any, idx: number) => {
-                        // Map overlap score (0 to 3) to X (10 to 490)
                         const x = 10 + (pt.overlap_score / 3.0) * 480;
-                        // Map surge index (0 to 100) to Y (150 to 10)
                         const y = 150 - (pt.surge_index / 100.0) * 140;
                         
-                        let color = "rgba(45, 212, 212, 0.4)";
-                        if (pt.corridor_tier === 2) color = "rgba(245, 158, 11, 0.5)";
-                        if (pt.corridor_tier === 3) color = "rgba(239, 68, 68, 0.6)";
+                        let color = "#6B7280"; // Default Gray
+                        if (pt.corridor_tier === 2) color = "#F59E0B"; // Amber
+                        if (pt.corridor_tier === 3) color = "#EF4444"; // Red
 
                         return (
                           <circle
                             key={idx}
                             cx={x.toFixed(1)}
                             cy={y.toFixed(1)}
-                            r="3"
+                            r="4"
                             fill={color}
+                            className="transition-all hover:r-6 cursor-pointer"
                           />
                         );
                       })}
                     </svg>
                     
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px', fontSize: '9px', fontFamily: 'var(--font-mono)', color: 'var(--text-tertiary)' }}>
+                    <div className="flex justify-between mt-2.5 text-[9px] font-mono text-[#9CA3AF] uppercase tracking-wider">
                       <span>Isolated Incidents (0 Overlap)</span>
                       <span>High Spatial Density (3 Overlap)</span>
                     </div>
@@ -199,36 +204,36 @@ export default function InsightsPage() {
 
             {/* Tab 2: Resolution Intelligence */}
             {activeTab === 'resolution' && (
-              <div className="dashboard-grid">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 
                 {/* Mean Resolution time by Cause */}
-                <div className="card col-6">
-                  <div className="card-title">
-                    <Clock size={15} style={{ color: 'var(--accent-signal)' }} />
-                    <span>Mean Resolution Time by Cause (minutes)</span>
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm overflow-hidden">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                    <Clock size={16} className="text-[#111111]" />
+                    <h2 className="text-sm font-semibold text-[#111111]">Mean Resolution Time by Cause</h2>
                   </div>
 
-                  <div style={{ overflowX: 'auto' }}>
-                    <table>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
                       <thead>
-                        <tr>
-                          <th>Cause</th>
-                          <th>Mean</th>
-                          <th>Median</th>
-                          <th>75th %</th>
-                          <th>Max</th>
+                        <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Cause</th>
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Mean</th>
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Median</th>
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">75th %</th>
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Max</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="divide-y divide-[#F3F4F6]">
                         {data.insights.resolution_by_cause?.map((res: any) => (
-                          <tr key={res.cause}>
-                            <td style={{ textTransform: 'capitalize', fontWeight: '500', color: 'var(--text-primary)' }}>
+                          <tr key={res.cause} className="hover:bg-[#F9FAFB]">
+                            <td className="px-4 py-3 text-xs font-medium text-[#111111] capitalize">
                               {res.cause.replace('_', ' ')}
                             </td>
-                            <td style={{ fontFamily: 'var(--font-mono)' }}>{res.mean.toFixed(1)}m</td>
-                            <td style={{ fontFamily: 'var(--font-mono)' }}>{res.median.toFixed(1)}m</td>
-                            <td style={{ fontFamily: 'var(--font-mono)' }}>{res.p75.toFixed(1)}m</td>
-                            <td style={{ fontFamily: 'var(--font-mono)' }}>{res.max.toFixed(1)}m</td>
+                            <td className="px-4 py-3 text-xs font-mono text-[#4B5563]">{res.mean.toFixed(1)}m</td>
+                            <td className="px-4 py-3 text-xs font-mono text-[#4B5563]">{res.median.toFixed(1)}m</td>
+                            <td className="px-4 py-3 text-xs font-mono text-[#4B5563]">{res.p75.toFixed(1)}m</td>
+                            <td className="px-4 py-3 text-xs font-mono text-[#4B5563]">{res.max.toFixed(1)}m</td>
                           </tr>
                         ))}
                       </tbody>
@@ -237,28 +242,32 @@ export default function InsightsPage() {
                 </div>
 
                 {/* Corridor Vulnerability vs Surge */}
-                <div className="card col-6">
-                  <div className="card-title">
-                    <Award size={15} style={{ color: 'var(--accent-normal)' }} />
-                    <span>Corridor Vulnerability Tier vs Surge Index</span>
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                    <Award size={16} className="text-[#111111]" />
+                    <h2 className="text-sm font-semibold text-[#111111]">Corridor Vulnerability Tier vs Surge Index</h2>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  
+                  <div className="space-y-6">
                     {data.insights.corridor_vulnerability_surge?.map((c: any, idx: number) => {
                       const fillPct = (c.mean_surge / maxCorrSurge) * 100;
                       return (
-                        <div key={idx} style={{ borderBottom: idx !== data.insights.corridor_vulnerability_surge.length - 1 ? '1px solid var(--border-subtle)' : 'none', paddingBottom: '8px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                            <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>
-                              {c.corridor} (Tier {c.tier})
+                        <div key={idx} className="border-b border-[#F3F4F6] last:border-0 pb-4 last:pb-0">
+                          <div className="flex justify-between items-center text-xs mb-2">
+                            <span className="font-medium text-[#111111]">
+                              {c.corridor} <span className="text-[#9CA3AF] text-[10px] font-semibold uppercase tracking-wider ml-1">(Tier {c.tier})</span>
                             </span>
-                            <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-signal)' }}>
+                            <span className="font-mono font-semibold text-[#111111]">
                               {c.mean_surge.toFixed(1)}% Surge
                             </span>
                           </div>
-                          <div style={{ width: '100%', height: '6px', background: 'var(--bg-input)', borderRadius: '3px', overflow: 'hidden' }}>
-                            <div style={{ width: `${fillPct}%`, height: '100%', background: 'var(--accent-normal)', borderRadius: '3px' }}></div>
+                          <div className="h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-[#111111] rounded-full" 
+                              style={{ width: `${fillPct}%` }}
+                            ></div>
                           </div>
-                          <div style={{ fontSize: '9px', color: 'var(--text-tertiary)', marginTop: '2px', textAlign: 'right' }}>
+                          <div className="text-[10px] text-[#9CA3AF] mt-1.5 text-right font-medium">
                             {c.incidents.toLocaleString()} logged events
                           </div>
                         </div>
@@ -272,70 +281,70 @@ export default function InsightsPage() {
 
             {/* Tab 3: Planned Event Analysis */}
             {activeTab === 'planned' && (
-              <div className="dashboard-grid">
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 
                 {/* Metric Summary */}
-                <div className="card col-4" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div className="card-title">
-                    <Calendar size={15} style={{ color: 'var(--accent-warning)' }} />
-                    <span>Lead Time Summary</span>
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Calendar size={16} className="text-[#111111]" />
+                    <h2 className="text-sm font-semibold text-[#111111]">Lead Time Summary</h2>
                   </div>
-                  <div style={{ padding: '12px 0' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', textTransform: 'uppercase', fontWeight: '600' }}>
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-1">
                       Average Lead Time
                     </div>
-                    <div style={{ fontSize: '32px', fontFamily: 'var(--font-display)', fontWeight: '700', color: 'var(--accent-warning)', margin: '4px 0' }}>
+                    <div className="text-4xl font-extrabold font-mono text-[#111111] tracking-tight mb-4">
                       {data.insights.avg_lead_time} hrs
                     </div>
-                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                    <p className="text-xs text-[#6B7280] leading-relaxed">
                       Advance warning buffer allocated by event organizers for planned closures or VIP movements.
                     </p>
                   </div>
                 </div>
 
                 {/* Planned vs Unplanned Comparison table */}
-                <div className="card col-8">
-                  <div className="card-title">
-                    <CheckSquare size={15} style={{ color: 'var(--accent-signal)' }} />
-                    <span>Planned vs Unplanned Event Comparison</span>
+                <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm xl:col-span-2 overflow-hidden">
+                  <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                    <CheckSquare size={16} className="text-[#111111]" />
+                    <h2 className="text-sm font-semibold text-[#111111]">Planned vs Unplanned Event Comparison</h2>
                   </div>
                   
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Event Type</th>
-                        <th>Average Surge</th>
-                        <th>Mean Resolution</th>
-                        <th>Total Incident Logs</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.insights.planned_vs_unplanned?.map((comp: any) => (
-                        <tr key={comp.event_type}>
-                          <td style={{ textTransform: 'uppercase', fontWeight: '600', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
-                            {comp.event_type}
-                          </td>
-                          <td style={{ fontFamily: 'var(--font-mono)' }}>{comp.mean_surge.toFixed(1)}%</td>
-                          <td style={{ fontFamily: 'var(--font-mono)' }}>{comp.mean_resolution.toFixed(1)} mins</td>
-                          <td>{comp.incidents.toLocaleString()} logs</td>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Event Type</th>
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Average Surge</th>
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Mean Resolution</th>
+                          <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-4 py-3">Total Incident Logs</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-[#F3F4F6]">
+                        {data.insights.planned_vs_unplanned?.map((comp: any) => (
+                          <tr key={comp.event_type} className="hover:bg-[#F9FAFB]">
+                            <td className="px-4 py-3 text-xs font-mono font-bold text-[#111111] uppercase">
+                              {comp.event_type}
+                            </td>
+                            <td className="px-4 py-3 text-xs font-mono text-[#4B5563]">{comp.mean_surge.toFixed(1)}%</td>
+                            <td className="px-4 py-3 text-xs font-mono text-[#4B5563]">{comp.mean_resolution.toFixed(1)} mins</td>
+                            <td className="px-4 py-3 text-xs text-[#6B7280]">{comp.incidents.toLocaleString()} logs</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
 
                 {/* Lead Time Distribution Histogram */}
                 {data.insights.planned_lead_times?.length > 0 && (
-                  <div className="card col-12">
-                    <div className="card-title">
-                      <BarChart size={15} style={{ color: 'var(--accent-warning)' }} />
-                      <span>Planned Event Lead Time Distribution (hours)</span>
+                  <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 shadow-sm xl:col-span-3">
+                    <div className="flex items-center gap-2 mb-6 pb-4 border-b border-[#F3F4F6]">
+                      <BarChart size={16} className="text-[#111111]" />
+                      <h2 className="text-sm font-semibold text-[#111111]">Planned Event Lead Time Distribution (hours)</h2>
                     </div>
 
-                    <div style={{ position: 'relative', width: '100%', padding: '10px 0' }}>
-                      <svg viewBox="0 0 500 120" className="w-full bg-black/10 border border-dashed border-[var(--border-subtle)] rounded-lg" style={{ overflow: 'visible' }}>
-                        {/* Vertical bars representing lead times */}
-                        {/* We group list items into 20 bins */}
+                    <div className="relative w-full">
+                      <svg viewBox="0 0 500 120" className="w-full bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg overflow-visible">
                         {(() => {
                           const bins = Array(20).fill(0);
                           const leadTimes = data.insights.planned_lead_times;
@@ -361,16 +370,17 @@ export default function InsightsPage() {
                                 y={y.toFixed(1)}
                                 width={barWidth}
                                 height={barHeight.toFixed(1)}
-                                fill="var(--accent-warning)"
-                                opacity="0.75"
-                                rx="2"
+                                fill="#111111"
+                                opacity="0.8"
+                                rx="1.5"
+                                className="transition-all hover:opacity-100 cursor-pointer"
                               />
                             );
                           });
                         })()}
                       </svg>
                       
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px', fontSize: '9px', fontFamily: 'var(--font-mono)', color: 'var(--text-tertiary)' }}>
+                      <div className="flex justify-between mt-2.5 text-[9px] font-mono text-[#9CA3AF] uppercase tracking-wider">
                         <span>Immediate (0.1 hrs)</span>
                         <span>Long Term (720 hrs / 30 days)</span>
                       </div>
@@ -383,10 +393,11 @@ export default function InsightsPage() {
 
           </div>
         ) : (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-            <div style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>
+          <div className="flex flex-col items-center justify-center py-32 text-center">
+            <div className="w-6 h-6 border-2 border-[#111111] border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-xs text-[#6B7280] font-medium tracking-wide uppercase">
               Computing advanced traffic intelligence splits...
-            </div>
+            </p>
           </div>
         )}
 

@@ -7,40 +7,36 @@ interface GaugeProps {
 }
 
 export default function Gauge({ value }: GaugeProps) {
-  // Clamp value between 0 and 100
   const clampedValue = Math.min(100, Math.max(0, value));
   
-  // SVG arc calculation parameters
-  // R = 50, Center = (60, 60), Arc goes from -180 deg to 0 deg (semicircle)
   const radius = 40;
-  const strokeWidth = 8;
-  const circumference = Math.PI * radius; // Half circle circumference
+  const strokeWidth = 6;
+  const circumference = Math.PI * radius;
   const strokeDashoffset = circumference - (clampedValue / 100) * circumference;
 
-  // Determine color based on threshold
-  let strokeColor = 'var(--accent-normal)';
+  let strokeColor = '#10b981';
   let statusText = 'NORMAL FLOW';
   
   if (clampedValue > 65) {
-    strokeColor = 'var(--accent-critical)';
+    strokeColor = '#111111';
     statusText = 'CRITICAL SURGE';
   } else if (clampedValue >= 35) {
-    strokeColor = 'var(--accent-warning)';
-    statusText = 'CONGESTION WARNING';
+    strokeColor = '#6B7280';
+    statusText = 'ELEVATED';
   }
 
   return (
-    <div className="gauge-container">
-      <svg viewBox="0 0 100 65" className="gauge-svg" style={{ maxWidth: '180px' }}>
+    <div className="flex flex-col items-center">
+      <svg viewBox="0 0 100 65" className="w-full max-w-[180px]">
         {/* Background Arc */}
         <path
           d="M 10 55 A 40 40 0 0 1 90 55"
           fill="none"
-          stroke="rgba(255, 255, 255, 0.05)"
+          stroke="#E5E7EB"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />
-        {/* Foreground (Filled) Arc */}
+        {/* Foreground Arc */}
         <path
           d="M 10 55 A 40 40 0 0 1 90 55"
           fill="none"
@@ -51,21 +47,17 @@ export default function Gauge({ value }: GaugeProps) {
           strokeDashoffset={strokeDashoffset}
           style={{ transition: 'stroke-dashoffset 0.8s ease-out, stroke 0.5s' }}
         />
-        {/* Numeric Text in Middle */}
         <text
           x="50"
           y="48"
-          className="gauge-value"
-          style={{ fontSize: '18px', fill: 'var(--text-primary)', textAnchor: 'middle', fontWeight: '700', fontFamily: 'var(--font-display)' }}
+          style={{ fontSize: '18px', fill: '#111111', textAnchor: 'middle', fontWeight: '700' }}
         >
           {clampedValue.toFixed(1)}%
         </text>
-        
-        {/* Label beneath */}
         <text
           x="50"
           y="62"
-          style={{ fontSize: '5px', fill: 'var(--text-tertiary)', textAnchor: 'middle', fontWeight: '700', letterSpacing: '0.05em' }}
+          style={{ fontSize: '5px', fill: '#9CA3AF', textAnchor: 'middle', fontWeight: '600', letterSpacing: '0.08em' }}
         >
           {statusText}
         </text>

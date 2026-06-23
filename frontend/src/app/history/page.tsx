@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { History, Trash2, Calendar, ShieldAlert, MapPin, ExternalLink } from 'lucide-react';
+import { History, Trash2, Calendar, MapPin, ArrowUpRight } from 'lucide-react';
 
 interface HistoryItem {
   timestamp: string;
@@ -45,87 +45,87 @@ export default function HistoryPage() {
   };
 
   return (
-    <main className="main-content" style={{ marginTop: '20px' }}>
+    <main className="max-w-7xl mx-auto px-6 py-10 animate-fade-in">
       
-      {/* Title */}
-      <div className="title-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      {/* Title section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#E5E7EB] pb-8 mb-8">
         <div>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <History size={28} className="text-[var(--accent-signal)]" style={{ color: 'var(--accent-signal)' }} />
-            <span>Prediction History Log</span>
+          <div className="flex items-center gap-2 mb-2">
+            <History size={20} className="text-[#111111]" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">Local Logs</span>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-[#111111] mb-2">
+            Prediction History Log
           </h1>
-          <p>Browse through locally computed incident simulations and resolved dispatch actions.</p>
+          <p className="text-sm text-[#6B7280]">
+            Browse through locally computed incident simulations and resolved dispatch actions.
+          </p>
         </div>
         
         {history.length > 0 && (
           <button 
             onClick={handleClearHistory} 
-            className="btn btn-secondary" 
-            style={{ width: 'auto', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 bg-white text-red-600 text-xs font-semibold rounded-lg hover:bg-red-50/50 transition-all duration-200 cursor-pointer"
           >
-            <Trash2 size={14} style={{ color: 'var(--accent-critical)' }} />
-            <span style={{ color: 'var(--accent-critical)' }}>Clear History Log</span>
+            <Trash2 size={14} />
+            <span>Clear History Log</span>
           </button>
         )}
       </div>
 
       {/* History content */}
       {history.length > 0 ? (
-        <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-          <div style={{ overflowX: 'auto', width: '100%' }}>
-            <table>
+        <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>Incident Location</th>
-                  <th>Event Cause</th>
-                  <th>Type</th>
-                  <th>Priority</th>
-                  <th>Surge Index</th>
-                  <th>Severity</th>
+                <tr className="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                  <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Timestamp</th>
+                  <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Incident Location</th>
+                  <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Event Cause</th>
+                  <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Type</th>
+                  <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Priority</th>
+                  <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Surge Index</th>
+                  <th className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] px-6 py-4 text-left">Severity</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#F3F4F6]">
                 {history.map((item, idx) => (
-                  <tr key={idx}>
-                    <td style={{ whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontFamily: 'var(--font-mono)' }}>
-                        <Calendar size={12} className="text-[var(--text-tertiary)]" />
+                  <tr key={idx} className="hover:bg-[#F9FAFB] transition-colors duration-150">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 text-xs font-mono text-[#4B5563]">
+                        <Calendar size={12} className="text-[#9CA3AF]" />
                         {formatDate(item.timestamp)}
                       </div>
                     </td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
-                        <MapPin size={12} style={{ color: 'var(--accent-signal)', flexShrink: 0 }} />
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 font-medium text-xs text-[#111111]">
+                        <MapPin size={12} className="text-[#6B7280] flex-shrink-0" />
                         <span>{item.road_name}</span>
                       </div>
                     </td>
-                    <td style={{ textTransform: 'capitalize' }}>
+                    <td className="px-6 py-4 text-xs text-[#374151] capitalize">
                       {item.event_cause.replace('_', ' ')}
                     </td>
-                    <td>
-                      <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
-                        {item.event_type}
-                      </span>
+                    <td className="px-6 py-4 text-xs text-[#6B7280]">
+                      {item.event_type}
                     </td>
-                    <td>
-                      <span style={{ 
-                        fontSize: '10px', 
-                        fontWeight: '700', 
-                        textTransform: 'uppercase', 
-                        color: item.priority === 'High' ? 'var(--accent-warning)' : 'var(--text-tertiary)' 
-                      }}>
+                    <td className="px-6 py-4">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                        item.priority === 'High' ? 'text-amber-600' : 'text-[#9CA3AF]'
+                      }`}>
                         {item.priority}
                       </span>
                     </td>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '600' }}>
+                    <td className="px-6 py-4 text-xs font-mono font-semibold text-[#111111]">
                       {item.surge.toFixed(1)}%
                     </td>
-                    <td>
-                      <span className={`badge ${
-                        item.severity === 'CRITICAL' ? 'badge-critical' :
-                        item.severity === 'WARNING' ? 'badge-warning' : 'badge-normal'
-                      }`} style={{ fontSize: '9px', padding: '2px 8px' }}>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold tracking-wider ${
+                        item.severity === 'CRITICAL' ? 'bg-red-50 text-red-600 border border-red-200/50' :
+                        item.severity === 'WARNING' ? 'bg-amber-50 text-amber-600 border border-amber-200/50' :
+                        'bg-emerald-50 text-emerald-600 border border-emerald-200/50'
+                      }`}>
                         {item.severity}
                       </span>
                     </td>
@@ -136,15 +136,20 @@ export default function HistoryPage() {
           </div>
         </div>
       ) : (
-        <div className="card" style={{ borderStyle: 'dashed', borderWidth: '2px', background: 'transparent', textAlign: 'center', padding: '60px 24px' }}>
-          <History size={48} style={{ color: 'var(--text-tertiary)', margin: '0 auto 16px' }} />
-          <h2 style={{ fontSize: '18px', color: 'var(--text-primary)', marginBottom: '8px' }}>No Predictions Found</h2>
-          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto 24px', lineHeight: '1.6' }}>
+        <div className="bg-white border-2 border-dashed border-[#E5E7EB] rounded-xl text-center py-20 px-6 max-w-lg mx-auto animate-slide-up">
+          <div className="flex items-center justify-center w-12 h-12 border border-[#E5E7EB] rounded-full mx-auto mb-4 text-[#9CA3AF]">
+            <History size={20} />
+          </div>
+          <h2 className="text-base font-semibold text-[#111111] mb-2">No Predictions Found</h2>
+          <p className="text-xs text-[#6B7280] leading-relaxed mb-8">
             Simulations you run on the Predict tab are saved locally in your browser's log. Let's create your first simulation!
           </p>
-          <Link href="/predict" className="btn btn-primary" style={{ width: 'auto', display: 'inline-flex', padding: '10px 24px' }}>
-            <ExternalLink size={16} />
+          <Link 
+            href="/predict" 
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#111111] text-white text-xs font-medium rounded-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+          >
             <span>Launch Predictor</span>
+            <ArrowUpRight size={14} />
           </Link>
         </div>
       )}

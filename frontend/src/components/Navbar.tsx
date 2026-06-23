@@ -17,13 +17,13 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="navbar-container">
-      <header className="navbar" style={{ maxWidth: '1080px' }}>
-        <Link href="/" className="brand">
-          <span className="brand-dot"></span>
-          <span>NIVAARAN.AI</span>
+    <header className="sticky top-0 z-50 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-[#E5E7EB]">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 group">
+          <span className="w-2 h-2 rounded-full bg-[#111111] group-hover:scale-125 transition-transform" />
+          <span className="text-sm font-bold tracking-[0.12em] text-[#111111]">NIVAARAN.AI</span>
         </Link>
-        <nav className="nav-links">
+        <nav className="flex items-center gap-1">
           {links.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -31,16 +31,19 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`nav-link ${isActive ? 'active' : ''}`}
-                style={{ padding: '6px 12px' }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'text-[#111111] bg-[#111111]/5'
+                    : 'text-[#9CA3AF] hover:text-[#111111] hover:bg-[#F3F4F6]'
+                }`}
               >
-                <Icon size={13} />
+                <Icon size={13} strokeWidth={1.5} />
                 <span>{link.label}</span>
               </Link>
             );
           })}
         </nav>
-      </header>
-    </div>
+      </div>
+    </header>
   );
 }

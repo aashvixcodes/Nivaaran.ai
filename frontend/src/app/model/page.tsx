@@ -123,40 +123,46 @@ export default function ModelPage() {
   ];
 
   return (
-    <main className="main-content" style={{ marginTop: '20px' }}>
-      
+    <main className="min-h-screen bg-[#FAFAFA] p-8">
+
       {/* Title */}
-      <div className="title-section">
-        <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Cpu size={28} className="text-[var(--accent-signal)]" style={{ color: 'var(--accent-signal)' }} />
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-[#111111] flex items-center gap-3">
+          <Cpu size={28} className="text-[#111111]" />
           <span>Model Architecture & Performance Console</span>
         </h1>
-        <p>Validate the performance, statistical errors, and feature weights of the underlying machine learning models.</p>
+        <p className="mt-2 text-sm text-[#6B7280]">
+          Validate the performance, statistical errors, and feature weights of the underlying machine learning models.
+        </p>
       </div>
 
       {error && (
-        <div className="dispatch-note" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <AlertTriangle size={18} style={{ flexShrink: 0 }} />
-          <div>
-            <strong>Showing Offline Pre-computed Models</strong> — Backend FastAPI server was not reachable. These metrics correspond to the validation test logs of our LightGBM + XGBoost ensemble training loop.
+        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm flex items-center gap-3">
+          <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />
+          <div className="text-[#111111]">
+            <span className="font-semibold">Showing Offline Pre-computed Models</span>
+            <span className="text-[#6B7280]"> — Backend FastAPI server was not reachable. These metrics correspond to the validation test logs of our LightGBM + XGBoost ensemble training loop.</span>
           </div>
         </div>
       )}
 
-      {/* Ensemble Validation Metrics (6 columns / cards) */}
-      <div style={{ marginBottom: '24px' }}>
-        <h3 className="card-title" style={{ marginBottom: '12px' }}>
-          <ShieldAlert size={14} style={{ color: 'var(--accent-signal)' }} />
+      {/* Ensemble Validation Metrics */}
+      <div className="mb-8">
+        <h3 className="text-sm font-semibold text-[#111111] flex items-center gap-2 mb-4">
+          <ShieldAlert size={14} className="text-[#6B7280]" />
           <span>Ensemble Validation Metrics</span>
         </h3>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px' }}>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {metricPairs.map((item, idx) => (
-            <div key={idx} className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '600', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div
+              key={idx}
+              className="bg-white border border-[#E5E7EB] rounded-xl p-5 flex flex-col gap-1 hover:shadow-sm hover:scale-[1.02] transition-all duration-200"
+            >
+              <div className="text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF]">
                 {item.label}
               </div>
-              <div style={{ fontSize: '24px', fontFamily: 'var(--font-mono)', fontWeight: '700', color: item.color }}>
+              <div className="text-2xl font-mono font-bold text-[#111111]">
                 {item.value.toFixed(4)}
               </div>
             </div>
@@ -165,30 +171,33 @@ export default function ModelPage() {
       </div>
 
       {/* Feature Importance & Feature engineering summaries split */}
-      <div className="dashboard-grid" style={{ marginBottom: '24px' }}>
-        
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
         {/* Left Column: LightGBM Feature Importances */}
-        <div className="card col-6">
-          <div className="card-title">
-            <BarChart2 size={15} style={{ color: 'var(--accent-signal)' }} />
-            <span>LightGBM Feature Importances (Top 20)</span>
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-sm transition-all duration-200">
+          <div className="flex items-center gap-2 mb-5">
+            <BarChart2 size={15} className="text-[#6B7280]" />
+            <span className="text-sm font-semibold text-[#111111]">LightGBM Feature Importances (Top 20)</span>
           </div>
 
-          <div className="bar-chart-container" style={{ gap: '12px' }}>
+          <div className="flex flex-col gap-4">
             {featureImportances.map((item, idx) => {
               const pct = (item.importance / maxImportance) * 100;
               return (
-                <div key={idx} className="bar-row">
-                  <div className="bar-header">
-                    <span className="bar-name">
+                <div key={idx}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs text-[#374151]">
                       {item.feature.replace('_', ' ').replace('_enc', ' target encode')}
                     </span>
-                    <span className="bar-val" style={{ color: 'var(--accent-signal)' }}>
+                    <span className="text-xs font-mono text-[#111111]">
                       {item.importance.toLocaleString()}
                     </span>
                   </div>
-                  <div className="bar-track">
-                    <div className="bar-fill" style={{ width: `${pct}%`, backgroundColor: 'var(--accent-signal)' }}></div>
+                  <div className="h-1.5 bg-[#F3F4F6] rounded-full w-full">
+                    <div
+                      className="h-1.5 bg-[#111111] rounded-full transition-all duration-500"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
                 </div>
               );
@@ -197,27 +206,27 @@ export default function ModelPage() {
         </div>
 
         {/* Right Column: Feature Engineering Summary */}
-        <div className="card col-6" style={{ height: 'fit-content' }}>
-          <div className="card-title">
-            <List size={15} style={{ color: 'var(--accent-warning)' }} />
-            <span>Feature Engineering Summary</span>
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 h-fit hover:shadow-sm transition-all duration-200">
+          <div className="flex items-center gap-2 mb-5">
+            <List size={15} className="text-[#6B7280]" />
+            <span className="text-sm font-semibold text-[#111111]">Feature Engineering Summary</span>
           </div>
 
-          <div style={{ overflowX: 'auto', maxHeight: '500px', overflowY: 'auto' }}>
-            <table>
+          <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
+            <table className="w-full">
               <thead>
-                <tr>
-                  <th>Feature</th>
-                  <th>Description</th>
+                <tr className="border-b border-[#E5E7EB]">
+                  <th className="text-left text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF] pb-3 pr-4">Feature</th>
+                  <th className="text-left text-[10px] font-semibold uppercase tracking-wide text-[#9CA3AF] pb-3">Description</th>
                 </tr>
               </thead>
               <tbody>
                 {FEATURE_DESCRIPTIONS.map((f, idx) => (
-                  <tr key={idx}>
-                    <td style={{ fontFamily: 'var(--font-mono)', fontWeight: '600', color: 'var(--text-primary)', fontSize: '11px', whiteSpace: 'nowrap' }}>
+                  <tr key={idx} className="border-b border-[#F3F4F6] last:border-0">
+                    <td className="py-2.5 pr-4 font-mono font-semibold text-[#111111] text-[11px] whitespace-nowrap">
                       {f.feature}
                     </td>
-                    <td style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
+                    <td className="py-2.5 text-[11px] text-[#6B7280]">
                       {f.desc}
                     </td>
                   </tr>
@@ -230,31 +239,31 @@ export default function ModelPage() {
       </div>
 
       {/* Schema Audit & Mapped Columns resolver */}
-      <div className="dashboard-grid">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
         {/* Adaptive Column Resolver Output */}
-        <div className="card col-6">
-          <div className="card-title">
-            <Database size={15} style={{ color: 'var(--accent-normal)' }} />
-            <span>Adaptive Column Resolver Output</span>
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-sm transition-all duration-200">
+          <div className="flex items-center gap-2 mb-5">
+            <Database size={15} className="text-[#6B7280]" />
+            <span className="text-sm font-semibold text-[#111111]">Adaptive Column Resolver Output</span>
           </div>
-          
-          <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '16px', maxHeight: '250px', overflowY: 'auto' }}>
-            <pre style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-normal)', whiteSpace: 'pre-wrap' }}>
+
+          <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4 max-h-[250px] overflow-y-auto">
+            <pre className="font-mono text-xs text-[#111111] whitespace-pre-wrap">
               {JSON.stringify(resolvedColumns, null, 2)}
             </pre>
           </div>
         </div>
 
         {/* Total Features code display */}
-        <div className="card col-6">
-          <div className="card-title">
-            <Code size={15} style={{ color: 'var(--accent-signal)' }} />
-            <span>Total Features Used in Training ({featureCols.length})</span>
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 hover:shadow-sm transition-all duration-200">
+          <div className="flex items-center gap-2 mb-5">
+            <Code size={15} className="text-[#6B7280]" />
+            <span className="text-sm font-semibold text-[#111111]">Total Features Used in Training ({featureCols.length})</span>
           </div>
-          
-          <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: '6px', padding: '16px', maxHeight: '250px', overflowY: 'auto' }}>
-            <pre style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
+
+          <div className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-lg p-4 max-h-[250px] overflow-y-auto">
+            <pre className="font-mono text-xs text-[#6B7280] whitespace-pre-wrap leading-relaxed">
               {featureCols.join('\n')}
             </pre>
           </div>
